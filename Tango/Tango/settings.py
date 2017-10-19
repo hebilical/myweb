@@ -17,7 +17,7 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 TEMPLATES_PATH=os.path.join(BASE_DIR,'templates')
-STATIC_PATH=os.path.join(BASE_DIR,'static')
+
 
 
 
@@ -111,20 +111,22 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = None
 
 USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
-
+STATIC_PATH=os.path.join(BASE_DIR,'static')
 STATIC_URL = '/static/'
 
 STATICFILE_DIR=[
-    STATIC_PATH,
+STATIC_PATH,
+
+
 ]

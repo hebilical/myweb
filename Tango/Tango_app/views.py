@@ -7,4 +7,5 @@ def index(request):
     return render(request,'Tango_app/index.html',mydict)
 
 def about(request):
-    return HttpResponse ('this is the about page !')
+    ab_dict={'page_author':'hebilical'}
+    return render(request,'Tango_app/about.html',ab_dict)
