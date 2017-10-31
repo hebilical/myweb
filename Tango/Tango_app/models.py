@@ -15,8 +15,8 @@ class Category(models.Model):
 class Article(models.Model):
     category=models.ForeignKey(Category);
     title=models.CharField(max_length=200,null=False);
-    url=models.URLField(default=r'^Tango_app/');
-    context=models.CharField(max_length=50000,null=True);
+
+    context=models.CharField(max_length=5000,null=True);
     author=models.CharField(max_length=128);
     createtime=models.DateTimeField(auto_now=True);
     updatetime=models.DateTimeField(auto_now=True);
