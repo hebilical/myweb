@@ -13,7 +13,7 @@ class Category(models.Model):
 
 
 class Article(models.Model):
-    category=models.ForeignKey(Category);
+    category=models.ManyToManyField(Category);
     title=models.CharField(max_length=200,null=False);
 
     context=models.CharField(max_length=5000,null=True);
@@ -24,5 +24,7 @@ class Article(models.Model):
     likes=models.IntegerField(default=0);
 
 class Article_Author(models.Model):
-
+    article=models.ManyToManyField(Article);
     name=models.CharField(max_length=128,null=False);
+    Email=models.EmailField(null=True);
+    tel=models.CharField(max_length=15,null=True);
