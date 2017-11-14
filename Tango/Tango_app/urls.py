@@ -1,7 +1,8 @@
 from django.conf.urls import  url
-from Tango_app import views
+from Tango_app.views import IndexView,AboutView,ArticleView
 urlpatterns=[
-                url(r'^$',views.index,name='index'),
-                url(r'^about',views.about, name='about')
+                url(r'^$',IndexView.as_view()),
+                url(r'^about', AboutView.as_view()),
+                url(r'^Article/$',ArticleView.as_view()),
 
             ]

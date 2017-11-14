@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>forms_test page</title>
+  </head>
+  <body>
+    <form class="" action="/Tango_app/Article/" method="post">
+      {% csrf_token %}
+      <label for="title">文章标题</label>
+      <input type="text" name="title"id='title'  value="">
+      <br>
+      <label for="category">标签</label>
+      <input type="text" name="categroy" value="">
+      <label for="author">作者</label>
+      <input type="text" id="author" value="">
+      <br>
+      <textarea name="context" rows="8" cols="80"></textarea>
+      <input type="submit" name="submit_A" value="提交">
+    </form>
+  </body>
+</html>
