@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {% load static %}
+
+    <script type="text/javascript" src='{% static "JS/jquery-3.2.1.js" %}'>
+
+    </script>
+    <script type="text/javascript" src='{% static "JS/Ajax.js" %}'>
+
+    </script>
+    <script type="text/javascript" src='{% static "JS/gw_table.js" %}'>
+
+    </script>
+    <meta charset="utf-8">
+    <title>欢迎使用Tango_app</title>
+  </head>
+  <body>
+  <a href="../">Home</a>
+    <div class="userInfo">
+      <label>当前用户:{{username}}</label>
+      <br>
+      <label>姓名:{{first_name}}</label>
+      <br>
+      <a href="../login">退出登录</a>
+    </div>
+    <br>
+    <div class="GW_input_Part">
+      <form class="" action="" method="post">
+      {% csrf_token %}
+      {{gw_form}}
+      <br>
+      <button type="submit" name="">确认</button>
+    </form>
+    </div>
+    <div class="GW_show_part">
+    <button type="button" id='get_post' name="button">已发至领导</button>
+      <table id='gw_table' border="2">
+        <tr >
+          <th type='hidden' rowspan="1" width='50'>ID</th>
+          <th >印号</th>
+          <th>印件名陈</th>
+          <th>开本</th>
+          <th>日期</th>
+          <th>工作内容</th>
+          <th>完成数</th>
+          <th>备注</th>
+          <th>难度系数</th>
+          <th>创建人</th>
+          <th>创建时间</th>
+          <th>当前状态</th>
+          <th>相关操作</th>
+        </tr>
+          {% for item in form_list %}
+            <tr>
+              <td type='hidden'>{{ item.id }}</td>
+              <td>{{item.PrintNum}}</td>
+              <td>{{item.PrintName}}</td>
+              <td>{{item.get_sidetype_display}}</td>
+              <td>{{item.WorkData|date:'Y-m-d'}}</td>
+              <td>{{item.get_WorkType_display}}</td>
+              <td>{{item.FinishQty}}</td>
+              <td>{{item.remark}}</td>
+              <td>{{item.K_val}}</td>
+              <td>{{item.createBy}}</td>
+              <td>{{item.createtime|date:'Y-m-d H:i:s'}}</td>
+              <td>{{item.get_staticcode_display}}</td>
+              <td>
+                <button type="button" name="del_button">删除</button>
+                <button type="button" name="post_button">送至下一级</button>
+              </td>
+            </tr>
+
+
+          {% endfor  %}
+
+      </table>
+
+    </div>
+
+
+  </body>
+</html>

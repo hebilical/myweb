@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load staticfiles %}
 <html>
   <head>
     <meta charset="utf-8">
@@ -9,7 +10,11 @@
       <a href="/Tango_app/about">about</a> <br>
     </div>
     <h1>welcome to my page!</h1><br>
+<div class="imgpart">
+  <img src="{% static 'images/pic.png' %}" alt="a girl !"><br>
+  <img src="{% static  'images/timg.jpg' %}" alt="a logo!">
 
-    <p>written by{{ author }}</p>
+</div>
+    <p>written by {{ author }}</p>
   </body>
 </html>

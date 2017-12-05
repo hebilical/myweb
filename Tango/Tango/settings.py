@@ -17,7 +17,7 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 TEMPLATES_PATH=os.path.join(BASE_DIR,'templates')
-STATIC_PATH=os.path.join(BASE_DIR,'static')
+
 
 
 
@@ -42,8 +42,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'Tango_app'
+    'Tango_app',
+    'guardian',
 ]
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend', # default
+    'guardian.backends.ObjectPermissionBackend',
+)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -115,20 +121,26 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
+LOGIN_URL='/Tango_app/login'
 
+
+
+STATIC_PATH=os.path.join(BASE_DIR,'static')
 STATIC_URL = '/static/'
 
 STATICFILE_DIR=[
-    STATIC_PATH,
+STATIC_PATH,
+
+
 ]

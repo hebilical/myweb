@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {% load static %}
+    <!-- <link rel="stylesheet" href="./css/gw.css"> -->
+    <script type="text/javascript" src='{% static "JS/jquery-3.2.1.js" %}'>
+
+    </script>
+    <script type="text/javascript" src='{% static "JS/Ajax.js" %}'>
+
+    </script>
+    <script type="text/javascript" src='{% static "JS/test.js" %}'>
+
+    </script>
+
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <h3>工务系数修改页</h3>
+    <form class="" action="" method="get">
+      <label for="S_printnum">印号:</label>
+      <input type="text" name="S_printnum" value="">
+      <label for="worker_num">工号:</label>
+      <input type="text" name="worker" value="">
+      <button type="submit" name="S_button">搜索</button>
+    </form>
+
+    <br>
+    <table id='gw_table' border='2'>
+      <tr >
+        <th rowspan='1' width='50'>ID</th>
+        <th>印号</th>
+        <th>印件名陈</th>
+        <th>开本</th>
+        <th>日期</th>
+        <th>工作内容</th>
+        <th>完成数</th>
+        <th>备注</th>
+        <th>难度系数</th>
+        <th>创建人</th>
+        <th>创建时间</th>
+        <th>填写系数</th>
+
+      </tr>
+        {% for item in form_list %}<tr>
+          <tr>
+            <td class="record_id">{{ item.id }}</td>
+            <td class="printnum">{{item.PrintNum}}</td>
+            <td>{{item.PrintName}}</td>
+            <td>{{item.get_sidetype_display}}</td>
+            <td>{{item.WorkData|date:'Y-m-d'}}</td>
+            <td>{{item.get_WorkType_display}}</td>
+            <td>{{item.FinishQty}}</td>
+            <td>{{item.remark}}</td>
+            <td>{{item.K_val}}</td>
+            <td>{{item.createBy}}</td>
+            <td>{{item.createtime|date:'Y-m-d H:i:s'}}</td>
+            <td>
+              <input type="text" class="k_val" value="">
+              <button type="button" class="K_btn">确定</button>
+            </td>
+          </tr>
+        {% endfor  %}
+    </table>
+    <br>
+    <br>
+<h3>系数已设置</h3>
+  <div class="gw_table">
+    <table id="gw_table_k" border="1">
+
+    </table>
+
+  </div>
+
+
+  </body>
+</html>
