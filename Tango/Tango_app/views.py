@@ -86,7 +86,7 @@ class GWView(View):
 
     def get(self,request):
         template_name='Tango_app/GW_table.html'
-        gw_list=GW_pre_table.objects.filter(createBy=request.user.first_name)
+        gw_list=GW_pre_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT')
         form_list=[]
         gw_form=GW_forms()
         for item in gw_list:
@@ -131,6 +131,13 @@ class GW_AjaxView(View):
         data=serializers.serialize('json',gw_list)
         return JsonResponse(data,safe=False)
     def post(self,request):
+        staict_code=request.POST.get('staict_code')
+        record=GW_pre_table.objects.filter(pk=int(request.POST.get('gw_id')),PrintNum=request.POST.get('gw_printnum'))
+        if request.POST.get('staict_code')=='POST':
+            record.update(staticcode=staict_code,postBy=request.user.username,posttime=datetime.now())
+        else:
+            record.update(staticcode=staict_code,updateBy=request.user.username,updatetime=datetime.now())
+
         pass
 
 

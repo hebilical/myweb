@@ -62,7 +62,7 @@ class GW_pre_table(models.Model):  #公务表
         ('CTF','CTF'),
         ('GB','改版'),
         ('SBL','算倍率'),
-        ('COPTDOT','COPYDOT'),
+        ('COPYDOT','COPYDOT'),
         ('KP','刻盘'),
     )
 

@@ -2,8 +2,22 @@
 <html>
   <head>
     {% load static %}
+    <link rel="stylesheet" src='{% static "bootstrap-3.3.7-dist/css/bootstrap.css" %}'>
+    <link rel="stylesheet" href="/css/master.css" src='{% static "bootstrap-table/dist/bootstrap-table.css" %}'>
+
     <!-- <link rel="stylesheet" href="./css/gw.css"> -->
     <script type="text/javascript" src='{% static "JS/jquery-3.2.1.js" %}'>
+
+    </script>
+    <script type="text/javascript" src='{% static "bootstrap-3.3.7-dist/js/bootstrap.js" %}'>
+
+    </script>
+    <script type="text/javascript"  src='{% static "bootstrap-table/dist/bootstrap-table.js" %}'>
+
+    </script>
+    <!-- 中文支持 -->
+
+    <script type="text/javascript" src='{% static "bootstrap-table/dist/locale/bootstrap-table-zh-CN.js" %}'>
 
     </script>
     <script type="text/javascript" src='{% static "JS/Ajax.js" %}'>
@@ -27,7 +41,10 @@
     </form>
 
     <br>
-    <table id='gw_table' border='2'>
+    <div class="container">
+
+    </div>
+    <table  id='gw_table' class='table table-bordered table-striped table-hove'>
       <tr >
         <th rowspan='1' width='50'>ID</th>
         <th>印号</th>
@@ -63,8 +80,8 @@
           </tr>
         {% endfor  %}
     </table>
-    <br>
-    <br>
+
+    </div>
 <h3>系数已设置</h3>
   <div class="gw_table">
     <table id="gw_table_k" border="1">
@@ -72,7 +89,6 @@
     </table>
 
   </div>
-
 
   </body>
 </html>

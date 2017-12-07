@@ -12,13 +12,6 @@ $(document).ready(function() {
   });
 
 //
-
-
-
-
-
-
-
   $('#get_post').on('click', function(event) {
     $.ajax({
       url: '/Tango_app/gwajax',
@@ -35,6 +28,8 @@ $(document).ready(function() {
                             '<th>创建人</th>'+
                             '<th>创建时间</th>'+
                              '<th>当前状态</th>'+
+                             '<th>过帐时间</th>'+
+                             '<th>删除时间</th>'+
                             '</tr>'
                           );
         var json =$.parseJSON(data);
@@ -45,7 +40,7 @@ $(document).ready(function() {
                       CTF:"CTF",
                       GB:"改版",
                       SBL:"算倍率",
-                      COPYDOT:"COPTDOT",
+                      COPYDOT:"COPYDOT",
                       KP:"刻盘",
         };
         var size_type={
@@ -74,17 +69,48 @@ $(document).ready(function() {
                                 '<td>'+el.fields.K_val+'</td>'+
                                 '<td>'+el.fields.createBy+'</td>'+
                                 '<td>'+el.fields.createtime+'</td>'+
-                                '<td>'+staict_type[el.fields.staticcode]+
-                                '</td>'
+                                '<td>'+staict_type[el.fields.staticcode]+'</td>'+
+                                '<td>'+el.fields.posttime+'</td>'+
+                                '<td>'+el.fields.updatetime+'</td>'
+
                               );
-
-
         });
-
       }
     });
 
 
+
+  });
+
+  $('#gw_table tr').on('click', '.mdf_btn', function(event) {
+
+    var gw_id=  $(this).closest('tr').find('.gw_pk').html();
+    var gw_printnum=$(this).closest('tr').find('.gw_printnum').html();
+    var modify_type={
+      del_button:'DELETED',
+      post_button:'POST',
+    };
+    var staict_code=$(this).attr('name');
+
+    $.ajax({
+      url: '/Tango_app/gwajax',
+      type: 'POST',
+      data: {
+        gw_id:gw_id,
+        gw_printnum:gw_printnum,
+        staict_code: modify_type[staict_code],
+
+      }
+    })
+    .done(function() {
+      console.log("success");
+    })
+    .fail(function() {
+      console.log("error");
+    })
+    .always(function() {
+      console.log("complete");
+    });
 
   });
 });

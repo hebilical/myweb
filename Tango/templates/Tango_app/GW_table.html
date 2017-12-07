@@ -53,8 +53,8 @@
         </tr>
           {% for item in form_list %}
             <tr>
-              <td type='hidden'>{{ item.id }}</td>
-              <td>{{item.PrintNum}}</td>
+              <td class="gw_pk">{{ item.id }}</td>
+              <td class="gw_printnum">{{item.PrintNum}}</td>
               <td>{{item.PrintName}}</td>
               <td>{{item.get_sidetype_display}}</td>
               <td>{{item.WorkData|date:'Y-m-d'}}</td>
@@ -66,8 +66,8 @@
               <td>{{item.createtime|date:'Y-m-d H:i:s'}}</td>
               <td>{{item.get_staticcode_display}}</td>
               <td>
-                <button type="button" name="del_button">删除</button>
-                <button type="button" name="post_button">送至下一级</button>
+                <button type="button" class='mdf_btn' name="del_button">删除</button>
+                <button type="button"  class='mdf_btn' name="post_button">送至下一级</button>
               </td>
             </tr>
 

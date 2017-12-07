@@ -16,36 +16,13 @@ return cookieValue;
 
 
 $(document).ready(function () {
-  $('#gw_table tr').css('background','');
 
-  /* 印号搜索按钮点击事件,将印号传递到后台,返回查询结果 */
-  // $('.S_button').on('click',  function() {
-    // var printnum= $('.S_printnum').val();
-    // var worker_num=$('.worker_num').val();
-    // $.ajax({
-    //   url: '/Tango_app/gw/modify/',
-    //   type: 'GET',
-    //   data: {s_printnum:printnum,
-    //          s_workernum:worker_num,
-    //         }
-    // })
-    // .done(function() {
-    //   console.log("success");
-    //   alert(printnum);
-    // })
-    // .fail(function() {
-    //   console.log("error");
-    // })
-    // .always(function() {
-    //   console.log("complete");
-    // });
+  // $('#gw_table tr').css('background','');
 
-    // });
+    /* bootstrap-table表格初始化 */
+    var init_table=function () {
 
-
-    /* Act on the event */
-
-
+    } ;
   /* 系数修改按钮点击事件,将信息提交到后台,并且返回修改后的数据  */
   $('#gw_table tr').on('click',function () {
 
@@ -64,19 +41,6 @@ $(document).ready(function () {
           'printnum':printnum,
         },
         success: function (data) {
-
-          $('#gw_table_k').html("<tr> "+
-                              '<th rowspan="1" width="50">印号</th>'+
-                              '<th>印件名陈</th>'+'<th>开本</th>'+
-                              '<th>日期</th>'+'<th>工作内容</th>'+
-                              '<th>完成数</th>'+'<th>备注</th>'+
-                              '<th>难度系数</th>'+
-                              '<th>创建人</th>'+
-                              '<th>创建时间</th>'+
-                              // '<th>填写系数</th>'+
-                              '</tr>'
-                            );
-
           var json =$.parseJSON(data);
           var work_type={
                         SMY:"数码样",
@@ -94,47 +58,121 @@ $(document).ready(function () {
             3:'16K',
             4:'32K',
           };
+          var static_type={
+            DRAFT:'初稿',
+            POST:'已过帐',
+            CHECKED:'已审核',
+            DELETED:'已删除',
+          };
+          // 下面进行表格初始化
+          $('#gw_table_k').bootstrapTable('destroy');
+          $('#gw_table_k').bootstrapTable({
+            columns:[{
+              field:'printnum',
+              title:'印号',
+            },
+            {
+              field:'printname',
+              title:'印件名',
+            },
+            {
+              field:'pagesize',
+              title:'开本',
+            },
+            {
+              field:'workdate',
+              title:'工作日期'
+            },
+            {
+              field:'FinishQty',
+              title:'完成数'
+            },
+            {
+              field:'k_val',
+              title:'难度系数'
+            },
+            {
+              field:'remark',
+              title:'备注'
+            },
+            {
+              field:'static_code',
+              title:'当前状态'
+            },
+            {
+              field:'createBy',
+              title:'建单人',
+            },
+            {
+              field:'createtime',
+              title:'建单时间'
+            },
+            {
+              field:'postby',
+              title:'过帐人',
+            },
+            {
+              field:'posttime',
+              title:'过帐时间'
+            },
+            {
+              field:'checkBy',
+              title:'审核人',
+            },
+            {
+              field:'checkTime',
+              title:'审核时间',
+            }
+
+            ],
+            cache:false,
+            pagination:true,
+            pageSize:5,
+            pageList:[5,10,30,50],
+            showPaginationSwitch:true,
+            showToggle:true,
+
+          });
+          var datajson=[];
           $.each(json,function(index, el) {
+// 创建和json对象存放单条记录
+            var unit_json={
+              printnum:el.fields.PrintNum,
+              printname:el.fields.PrintName,
+              pagesize:size_type[el.fields.sidetype],
+              workdate:el.fields.WorkData,
+              FinishQty:el.fields.FinishQty,
+              remark:el.fields.remark,
+              k_val:el.fields.K_val,
+              static_code:static_type[el.fields.staticcode],
+              createBy:el.fields.createBy,
+              createtime:el.fields.createtime,
+              postby:el.fields.postBy,
+              posttime:el.fields.posttime,
+              checkBy:el.fields.CheckBy,
+              checkTime:el.fields.CheckTime
 
-
-            $('#gw_table_k').append('<tr>'+'<td class="record_id">'+el.fields.PrintNum+'</td>'+
-                                  '<td class="printnum">'+el.fields.PrintName+'</td>'+
-                                  '<td>'+size_type[el.fields.sidetype] +'</td>'+
-                                  // '<td>'+el.fields.SubCode+'</td>'+
-
-                                  '<td>'+el.fields.WorkData+'</td>'+
-                                  '<td>'+work_type[el.fields.WorkType] +'</td>'+
-                                  '<td>'+el.fields.FinishQty+'</td>'+
-                                  '<td>'+el.fields.remark+'</td>'+
-                                  '<td>'+el.fields.K_val+'</td>'+
-                                  '<td>'+el.fields.createBy+'</td>'+
-                                  '<td>'+el.fields.createtime+'</td>'
-                                  //
-                                  // '<td>'+
-                                  // '<input type="text" class="k_val" value="">'+
-                                  // '<button type="button" class="K_btn">确定</button>'+
-                                  // '</td>'+
-                                  // '</tr>'
-
-                                );
+            };
+            datajson.push(unit_json);
+            $('#gw_table_k').bootstrapTable('load',datajson);
           });
         }
     });
     });
   });
-  $('#gw_table_k').on('click','tr',  function(event) {
-    alert($(this).text());
-  /* Act on the event */
-  });
+  // $('#gw_table_k').on('click','tr',  function(event) {
+  //   alert($(this).text());
+  // /* Act on the event */
+  // });
 
-  $('body').on('mouseover', 'tr', function(event) {
-    $(this).css('background','#987');
-
-
-  });
-  $('body').on('mouseout', 'tr', function(event) {
-    $(this).css('background','');
-
-
-  });
+  // $('body').on('mouseover', 'tr', function(event) {
+  //   $(this).css('background','#987');
+  //
+  //
+  // });
+  // $('body').on('mouseout', 'tr', function(event) {
+  //   $(this).css('background','');
+  //
+  //
+  // });
 });
