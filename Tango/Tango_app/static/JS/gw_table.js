@@ -1,17 +1,5 @@
 $(document).ready(function() {
 
-
-
-//标识当前行
-  $('body').on('mouseover', 'tr', function(event) {
-    $(this).css('background','#987');
-  });
-
-  $('body').on('mouseout', 'tr', function(event) {
-    $(this).css('background','');
-  });
-
-//
   $('#get_post').on('click', function(event) {
     $.ajax({
       url: '/Tango_app/gwajax',
@@ -19,19 +7,7 @@ $(document).ready(function() {
       data: {staict_code: 'POST'},
       success:function (data) {
 
-        $('#gw_table').html("<tr> "+
-                            '<th rowspan="1" width="50">印号</th>'+
-                            '<th>印件名陈</th>'+'<th>开本</th>'+
-                            '<th>日期</th>'+'<th>工作内容</th>'+
-                            '<th>完成数</th>'+'<th>备注</th>'+
-                            '<th>难度系数</th>'+
-                            '<th>创建人</th>'+
-                            '<th>创建时间</th>'+
-                             '<th>当前状态</th>'+
-                             '<th>过帐时间</th>'+
-                             '<th>删除时间</th>'+
-                            '</tr>'
-                          );
+
         var json =$.parseJSON(data);
         var work_type={
                       SMY:"数码样",
@@ -56,25 +32,125 @@ $(document).ready(function() {
               DELETED:'已删除',
         };
 
+
+        var datajson=[];
+        //  alert(data);
+
         $.each(json,function(index, el) {
-          $('#gw_table').append('<tr>'+'<td class="record_id">'+el.fields.PrintNum+'</td>'+
-                                '<td class="printnum">'+el.fields.PrintName+'</td>'+
-                                '<td>'+size_type[el.fields.sidetype] +'</td>'+
-                                // '<td>'+el.fields.SubCode+'</td>'+
-
-                                '<td>'+el.fields.WorkData+'</td>'+
-                                '<td>'+work_type[el.fields.WorkType] +'</td>'+
-                                '<td>'+el.fields.FinishQty+'</td>'+
-                                '<td>'+el.fields.remark+'</td>'+
-                                '<td>'+el.fields.K_val+'</td>'+
-                                '<td>'+el.fields.createBy+'</td>'+
-                                '<td>'+el.fields.createtime+'</td>'+
-                                '<td>'+staict_type[el.fields.staticcode]+'</td>'+
-                                '<td>'+el.fields.posttime+'</td>'+
-                                '<td>'+el.fields.updatetime+'</td>'
-
-                              );
+          // 创建和json对象存放单条记录
+          // alert('进入循环');
+          var unit_json={
+                printnum:el.fields.PrintNum,
+                printname:el.fields.PrintName,
+                pagesize:size_type[el.fields.sidetype],
+                workdate:el.fields.WorkData,
+                worktype:work_type[el.fields.WorkType],
+                FinishQty:el.fields.FinishQty,
+                k_val:el.fields.K_val,
+                remark:el.fields.remark,
+                static_code:staict_type[el.fields.staticcode],
+                createBy:el.fields.createBy,
+                createtime:el.fields.createtime,
+                postby:el.fields.postBy,
+                posttime:el.fields.posttime,
+                checkBy:el.fields.CheckBy,
+                checkTime:el.fields.CheckTime
+                };
+          datajson.push(unit_json);
         });
+        // alert(datajson);
+        $('#gw_table').bootstrapTable('destroy');
+        $('#gw_table').bootstrapTable({
+          columns:[{
+            field:'printnum',
+            title:'印号',
+          },
+          {
+            field:'printname',
+            title:'印件名',
+          },
+          {
+            field:'pagesize',
+            title:'开本',
+          },
+          {
+            field:'workdate',
+            title:'工作日期'
+          },
+          {
+            field:'worktype',
+            title:'工作内容',
+          },
+          {
+            field:'FinishQty',
+            title:'完成数'
+          },
+          {
+            field:'k_val',
+            title:'难度系数'
+          },
+          {
+            field:'remark',
+            title:'备注'
+          },
+          {
+            field:'static_code',
+            title:'当前状态'
+          },
+          {
+            field:'createBy',
+            title:'建单人',
+          },
+          {
+            field:'createtime',
+            title:'建单时间'
+          },
+          {
+            field:'postby',
+            title:'过帐人',
+          },
+          {
+            field:'posttime',
+            title:'过帐时间'
+          },
+          {
+            field:'checkBy',
+            title:'审核人',
+          },
+          {
+            field:'checkTime',
+            title:'审核时间',
+          }
+
+          ],
+          // 导出设置
+          // exportDataType:'all',
+          // showExport:true,
+          // exportTypes:['excel'],
+          // buttonsAlign:'right',
+          // Icons:'glyphicon-export',
+          // exportOptions:{
+          //     fileName:'gw_report',
+          //     worksheetName:'sheet1',
+          //     ta
+          // },
+
+
+
+          cache:false,
+          pagination:true,
+          pageSize:5,
+          pageList:[5,10,30,50],
+          showPaginationSwitch:true,
+          showToggle:true,
+          showFooter:false,
+          paginationHAlign:'left',
+          search:true,
+          editable:true,
+
+
+        });
+        $('#gw_table').bootstrapTable('load',datajson);
       }
     });
 

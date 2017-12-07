@@ -19,10 +19,6 @@ $(document).ready(function () {
 
   // $('#gw_table tr').css('background','');
 
-    /* bootstrap-table表格初始化 */
-    var init_table=function () {
-
-    } ;
   /* 系数修改按钮点击事件,将信息提交到后台,并且返回修改后的数据  */
   $('#gw_table tr').on('click',function () {
 
@@ -84,6 +80,10 @@ $(document).ready(function () {
               title:'工作日期'
             },
             {
+              field:'worktype',
+              title:'工作内容',
+            },
+            {
               field:'FinishQty',
               title:'完成数'
             },
@@ -131,6 +131,9 @@ $(document).ready(function () {
             pageList:[5,10,30,50],
             showPaginationSwitch:true,
             showToggle:true,
+            paginationHAlign:'left',
+            search:true,
+
 
           });
           var datajson=[];
@@ -141,6 +144,7 @@ $(document).ready(function () {
               printname:el.fields.PrintName,
               pagesize:size_type[el.fields.sidetype],
               workdate:el.fields.WorkData,
+              worktype:work_type[el.fields.WorkType],
               FinishQty:el.fields.FinishQty,
               remark:el.fields.remark,
               k_val:el.fields.K_val,
@@ -154,8 +158,9 @@ $(document).ready(function () {
 
             };
             datajson.push(unit_json);
-            $('#gw_table_k').bootstrapTable('load',datajson);
+
           });
+          $('#gw_table_k').bootstrapTable('load',datajson);
         }
     });
     });

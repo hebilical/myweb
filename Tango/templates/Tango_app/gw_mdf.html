@@ -2,8 +2,8 @@
 <html>
   <head>
     {% load static %}
-    <link rel="stylesheet" src='{% static "bootstrap-3.3.7-dist/css/bootstrap.css" %}'>
-    <link rel="stylesheet" href="/css/master.css" src='{% static "bootstrap-table/dist/bootstrap-table.css" %}'>
+    <link rel="stylesheet" href='{% static "bootstrap-3.3.7-dist/css/bootstrap.css" %}'>
+    <link rel="stylesheet" href='{% static "bootstrap-table/dist/bootstrap-table.css" %}'>
 
     <!-- <link rel="stylesheet" href="./css/gw.css"> -->
     <script type="text/javascript" src='{% static "JS/jquery-3.2.1.js" %}'>
@@ -41,10 +41,8 @@
     </form>
 
     <br>
-    <div class="container">
-
-    </div>
-    <table  id='gw_table' class='table table-bordered table-striped table-hove'>
+    <div class="gw_table">
+    <table  id='gw_table' class='table table-bordered table-striped table-hover'>
       <tr >
         <th rowspan='1' width='50'>ID</th>
         <th>印号</th>
@@ -82,7 +80,7 @@
     </table>
 
     </div>
-<h3>系数已设置</h3>
+<h4>系数已设置</h4>
   <div class="gw_table">
     <table id="gw_table_k" border="1">
 
