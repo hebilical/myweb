@@ -20,15 +20,15 @@ class IndexView(View):
         template_name='Tango_app/index.html'
         return render(request,template_name)
 
-class ArticleView(View):
-    def get(self,request):
-        template_name='Tango_app/Article.html'
-        return render(request,template_name)
-
-
-
-    def post(self,request):
-        pass
+# class ArticleView(View):
+#     def get(self,request):
+#         template_name='Tango_app/Article.html'
+#         return render(request,template_name)
+#
+#
+#
+#     def post(self,request):
+#         pass
 
 class AboutView(View):
 
@@ -91,12 +91,13 @@ class GWView(View):
         gw_form=GW_forms()
         for item in gw_list:
             form_list.append(item)
-            assign_perm('Tango_app.gw_draft_post',request.user,item)
+            # assign_perm('Tango_app.gw_draft_post',request.user,item)
         if request.user.is_anonymous :
             info_dict={'username':'用户未登录','first_name':'用户未登录'}
         else:
+
             info_dict={'username':request.user.username,'first_name':request.user.first_name}
-        info_dict['form_list']=form_list
+            info_dict['form_list']=form_list
         info_dict['gw_form']=gw_form
         return render(request,template_name,info_dict)
 
@@ -104,6 +105,7 @@ class GWView(View):
     def post(self,request):
         template_name='Tango_app/GW_table.html'
         info_dict={'username':request.user.username,'first_name':request.user.first_name}
+        form_list=[]
         gw_form=GW_forms()
         if request.user.is_authenticated():
             form=GW_forms(request.POST)
@@ -111,13 +113,13 @@ class GWView(View):
                 record=form.save(commit=False)
                 record.createBy=request.user.first_name
                 record.save()
-            gw_list=GW_pre_table.objects.filter(createBy=request.user.first_name)
-            form_list=[]
+                assign_perm('Tango_app.gw_draft_post',request.user,record)
+            gw_list=GW_pre_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT')
             for item in gw_list:
-                assign_perm('Tango_app.gw_draft_post',request.user,item)
                 form_list.append(item)
-            info_dict['form_list']=form_list
             info_dict['gw_form']=gw_form
+            info_dict['form_list']=form_list
+            # return JsonResponse(data,safe=False)
         else:
             return HttpResponseRedirect('/Tango_app/login')
         return render(request,template_name,info_dict)

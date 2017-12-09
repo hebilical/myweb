@@ -20,10 +20,29 @@
     <script type="text/javascript" src='{% static "bootstrap-table/dist/locale/bootstrap-table-zh-CN.js" %}'>
 
     </script>
+    <!-- 支持导出 -->
+    <script type="text/javascript" src='{% static "bootstrap-table/dist/extensions/export/bootstrap-table-export.min.js" %}'>
+
+    </script>
+    <script type="text/javascript" src='{% static "tableExport.jquery.plugin/tableExport.js" %}' >
+
+    </script>
+
+    <script type="text/javascript" src='{% static "tableExport.jquery.plugin/libs/js-xlsx/xlsx.core.min.js" %}'>
+
+    </script>
+<!--   支持行内编辑-->
+    <script type="text/javascript" src='{% static "bootstrap3-editable/js/bootstrap-editable.js" %}' >
+
+    </script>
+    <script type="text/javascript"  src='{% static "bootstrap-table/dist/extensions/editable/bootstrap-table-editable.js" %}'>
+
+    </script>
+
     <script type="text/javascript" src='{% static "JS/Ajax.js" %}'>
 
     </script>
-    <script type="text/javascript" src='{% static "JS/test.js" %}'>
+    <script type="text/javascript" src='{% static "JS/gw_mdf.js" %}'>
 
     </script>
 
@@ -41,7 +60,9 @@
     </form>
 
     <br>
-    <div class="gw_table">
+    <div class="container">
+
+    </div>
     <table  id='gw_table' class='table table-bordered table-striped table-hover'>
       <tr >
         <th rowspan='1' width='50'>ID</th>

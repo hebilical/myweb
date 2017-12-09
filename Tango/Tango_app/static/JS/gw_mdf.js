@@ -37,6 +37,7 @@ $(document).ready(function () {
           'printnum':printnum,
         },
         success: function (data) {
+
           var json =$.parseJSON(data);
           var work_type={
                         SMY:"数码样",
@@ -63,9 +64,18 @@ $(document).ready(function () {
           // 下面进行表格初始化
           $('#gw_table_k').bootstrapTable('destroy');
           $('#gw_table_k').bootstrapTable({
-            columns:[{
+            columns:[
+              {
+                field:'record_id',
+                title:'主键',
+                visible:false,
+
+              },
+              {
               field:'printnum',
               title:'印号',
+              sortable:true,
+              order:'desc'
             },
             {
               field:'printname',
@@ -77,7 +87,9 @@ $(document).ready(function () {
             },
             {
               field:'workdate',
-              title:'工作日期'
+              title:'工作日期',
+              sortable:true,
+              order:'desc'
             },
             {
               field:'worktype',
@@ -89,7 +101,17 @@ $(document).ready(function () {
             },
             {
               field:'k_val',
-              title:'难度系数'
+              title:'难度系数',
+              editable:{
+                type:'text',
+                title:'难度系数',
+                validate: function (v) {
+                        if (isNaN(v)) return '请填写数字';
+                        var k_val = parseFloat(v);
+                        if (k_val <= 0) return '必须大于或者等于0';
+                    }
+
+              }
             },
             {
               field:'remark',
@@ -113,7 +135,9 @@ $(document).ready(function () {
             },
             {
               field:'posttime',
-              title:'过帐时间'
+              title:'过帐时间',
+              sortable:true,
+              order:'desc'
             },
             {
               field:'checkBy',
@@ -122,9 +146,33 @@ $(document).ready(function () {
             {
               field:'checkTime',
               title:'审核时间',
+            },
+            {
+              field:'operation',
+              title:'操作',
+              width:100,
+              formatter:function(value,row,index){
+                                  var strHtml ='<button class="k_checked_btn">'+ '确认' +'</button>';
+                                  return strHtml;
+                              },
+              // editable:{defaultValue:'test'},
+
             }
 
             ],
+
+            exportDataType:'all',
+            showExport:true,
+            exportTypes:['excel'],
+            buttonsAlign:'right',
+            Icons:'glyphicon-export',
+            exportOptions:{
+                fileName:'gw_report',
+                worksheetName:'sheet1',
+
+            },
+
+
             cache:false,
             pagination:true,
             pageSize:5,
@@ -133,6 +181,8 @@ $(document).ready(function () {
             showToggle:true,
             paginationHAlign:'left',
             search:true,
+            editable:true,
+            showColumns:true,
 
 
           });
@@ -140,6 +190,7 @@ $(document).ready(function () {
           $.each(json,function(index, el) {
 // 创建和json对象存放单条记录
             var unit_json={
+              record_id:el.pk,
               printnum:el.fields.PrintNum,
               printname:el.fields.PrintName,
               pagesize:size_type[el.fields.sidetype],
@@ -165,19 +216,5 @@ $(document).ready(function () {
     });
     });
   });
-  // $('#gw_table_k').on('click','tr',  function(event) {
-  //   alert($(this).text());
-  // /* Act on the event */
-  // });
 
-  // $('body').on('mouseover', 'tr', function(event) {
-  //   $(this).css('background','#987');
-  //
-  //
-  // });
-  // $('body').on('mouseout', 'tr', function(event) {
-  //   $(this).css('background','');
-  //
-  //
-  // });
 });

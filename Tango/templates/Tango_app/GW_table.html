@@ -4,6 +4,7 @@
     {% load static %}
     <link rel="stylesheet" href='{% static "bootstrap-3.3.7-dist/css/bootstrap.css" %}'>
     <link rel="stylesheet" href='{% static "bootstrap-table/dist/bootstrap-table.css" %}'>
+    <link rel="stylesheet" href='{% static "bootstrap3-editable/css/bootstrap-editable.css" %}'>
 
     <!-- <link rel="stylesheet" href="./css/gw.css"> -->
     <script type="text/javascript" src='{% static "JS/jquery-3.2.1.js" %}'>
@@ -17,15 +18,29 @@
     </script>
     <!-- 中文支持 -->
 
+
     <script type="text/javascript" src='{% static "bootstrap-table/dist/locale/bootstrap-table-zh-CN.js" %}'>
+  // 支持表格导出
+    </script>
+    <script type="text/javascript" src='{% static "tableExport.jquery.plugin/tableExport.js" %}'>
 
     </script>
-    <script type="text/javascript" src='{% static "JS/Ajax.js" %}'>
+    <script type="text/javascript" src='{% static "tableExport.jquery.plugin/libs/js-xlsx/xlsx.core.min.js" %}'>
 
     </script>
-    <script type="text/javascript" src='{% static "JS/test.js" %}'>
+
+    <script type="text/javascript"  src='{% static "bootstrap-table/dist/extensions/export/bootstrap-table-export.js" %}'>
 
     </script>
+    <!-- 支持表格在线编辑 -->
+
+    <script type="text/javascript" src='{% static "bootstrap3-editable/js/bootstrap-editable.js" %}' >
+
+    </script>
+    <script type="text/javascript"  src='{% static "bootstrap-table/dist/extensions/editable/bootstrap-table-editable.js" %}'>
+
+    </script>
+    <!--  处理Django的CSRF保护-->
 
     <script type="text/javascript" src='{% static "JS/Ajax.js" %}'>
 
@@ -34,9 +49,10 @@
 
     </script>
     <meta charset="utf-8">
-    <title>欢迎使用Tango_app</title>
+    <title>工务编辑页</title>
   </head>
   <body>
+    <h2>工务记录页</h2>
   <a href="../">Home</a>
     <div class="userInfo">
       <label>当前用户:{{username}}</label>
@@ -51,14 +67,17 @@
       {% csrf_token %}
       {{gw_form}}
       <br>
-      <button type="submit" name="">确认</button>
+      <button id='sub_btn' type="submit" name="">确认</button>
     </form>
     </div>
     <div class="GW_show_part">
-    <button type="button" id='get_post' name="button">已发至领导</button>
-      <table id='gw_table' class='table table-bordered table-hover'>
+    <button type="button" id='get_draft' name="button">查看初稿</button>
+    <button type="button" id='get_post' class='get_record' name="button">查看已过帐</button>
+    <button type="button" id='get_checked' class='get_record' name="button">查看已批核</button>
+    <button type="button" id='get_del' class='get_record' name="button">查看已删除</button>
+      <table id='gw_table' data-pagination="true" data-search="true" data-toggle="table">
         <tr >
-          <th type='hidden' rowspan="1" width='50'>ID</th>
+          <th >ID</th>
           <th >印号</th>
           <th>印件名陈</th>
           <th>开本</th>
