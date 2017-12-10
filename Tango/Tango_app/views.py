@@ -132,6 +132,9 @@ class GW_AjaxView(View):
         gw_list=GW_pre_table.objects.filter(createBy=request.user.first_name,staticcode=request.GET.get('staict_code'))
         data=serializers.serialize('json',gw_list)
         return JsonResponse(data,safe=False)
+
+
+
     def post(self,request):
         staict_code=request.POST.get('staict_code')
         record=GW_pre_table.objects.filter(pk=int(request.POST.get('gw_id')),PrintNum=request.POST.get('gw_printnum'))
@@ -153,13 +156,14 @@ class GW_Mdf_View(View):
     # def dispatch(self,*args,**kwargs):
     #     return super(GW_Mdf_View,self).dispatch(*args,**kwargs)
     def get(self,request):
-        form_list=[]
+        info_dict={'username':request.user.username,'first_name':request.user.first_name}
+        # form_list=[]
         template_name='Tango_app/gw_mdf.html'
-        gw_list=GW_pre_table.objects.filter(PrintNum=request.GET.get('S_printnum'))
-        for item in gw_list:
-            if request.user.has_perm('Tango_app.gw_draft_post',item):
-                form_list.append(item)
-        info_dict={'form_list':form_list}
+        # gw_list=GW_pre_table.objects.filter(PrintNum=request.GET.get('S_printnum'))
+        # for item in gw_list:
+        #     if request.user.has_perm('Tango_app.gw_draft_post',item):
+        #         form_list.append(item)
+        # info_dict={'form_list':form_list}
         return render(request,template_name,info_dict)
 
     def post(self,request):
@@ -173,12 +177,30 @@ class GW_Mdf_View(View):
             gw_record.updateBy=request.user.first_name
             gw_record.updatetime=datetime.now()
             gw_record.save()
-
+            # 返回所有已过帐状态的记录
             form_list=[]
             template_name='Tango_app/gw_mdf.html'
-            gw_list=GW_pre_table.objects.filter(createBy=request.user.first_name)
+            gw_list=GW_pre_table.objects.filter(staticcode='POST')
             data=serializers.serialize('json',gw_list)
             return JsonResponse(data,safe=False)
         else:
             print('Ajax失败!')
             return HttpResponse('Ajax 失败')
+
+@method_decorator([login_required,csrf_protect],name='dispatch')
+class GW_MdfView_ajax(View):
+    def get(self,request):
+        if request.is_ajax:
+            staict_code=request.GET.get('static_code')
+            gw_list=GW_pre_table.objects.filter(staticcode=staict_code)
+            data=serializers.serialize('json',gw_list)
+            return JsonResponse(data,safe=False)
+        else:
+            pass
+
+
+
+
+
+    def post(self,request):
+        pass
