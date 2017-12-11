@@ -8,8 +8,8 @@ from django.contrib.auth.models import User
 from Tango_app.forms import GW_forms
 from django.http import HttpResponse,Http404,HttpResponseRedirect,JsonResponse
 from django.views.generic.base import View
-from Tango_app.models import Article ,Category,GW_pre_table
-from Tango_app.forms import GW_forms
+from Tango_app.models import Article ,Category,GW_pre_table,PRO_table
+from Tango_app.forms import GW_forms , PRO_forms
 from guardian.shortcuts import assign_perm
 from django.core import serializers
 # Create your views here.
@@ -129,6 +129,7 @@ class GWView(View):
 @method_decorator([login_required,csrf_protect],name='dispatch')
 class GW_AjaxView(View):
     def get(self,request):
+        print(request.GET.get('staict_code'))
         gw_list=GW_pre_table.objects.filter(createBy=request.user.first_name,staticcode=request.GET.get('staict_code'))
         data=serializers.serialize('json',gw_list)
         return JsonResponse(data,safe=False)
@@ -145,25 +146,14 @@ class GW_AjaxView(View):
 
         pass
 
-
-
-
-
-
 @method_decorator([login_required,csrf_protect],name='dispatch')
 class GW_Mdf_View(View):
 
-    # def dispatch(self,*args,**kwargs):
-    #     return super(GW_Mdf_View,self).dispatch(*args,**kwargs)
+    # 工务表浏览器正常访问
+    #
     def get(self,request):
         info_dict={'username':request.user.username,'first_name':request.user.first_name}
-        # form_list=[]
         template_name='Tango_app/gw_mdf.html'
-        # gw_list=GW_pre_table.objects.filter(PrintNum=request.GET.get('S_printnum'))
-        # for item in gw_list:
-        #     if request.user.has_perm('Tango_app.gw_draft_post',item):
-        #         form_list.append(item)
-        # info_dict={'form_list':form_list}
         return render(request,template_name,info_dict)
 
     def post(self,request):
@@ -189,6 +179,7 @@ class GW_Mdf_View(View):
 
 @method_decorator([login_required,csrf_protect],name='dispatch')
 class GW_MdfView_ajax(View):
+    # 返回工务修改页三个按钮的对应状态记录
     def get(self,request):
         if request.is_ajax:
             staict_code=request.GET.get('static_code')
@@ -201,6 +192,81 @@ class GW_MdfView_ajax(View):
 
 
 
+            # 工务修改处理函数
+    def post(self,request):
+            #是否是设置系数
+        if request.is_ajax and request.POST.get('k_set')=='true':
+            print(request.POST.get('k_set'))
+            record_id=request.POST.get('record_id')
+            printnum=request.POST.get('printnum')
+            k_val=request.POST.get('k_val')
+            print (k_val)
+
+            record=GW_pre_table.objects.get(id=record_id,PrintNum=printnum)
+            record.K_val=k_val
+            record.staticcode='CHECKED'
+            record.CheckBy=request.user.username
+            record.CheckTime=datetime.now()
+            record.save()
+            gw_list=GW_pre_table.objects.filter(staticcode='POST')
+            data=serializers.serialize('json',gw_list)
+            # 不是设置工务系数,就是发还操作
+        else:
+            record_id=request.POST.get('record_id')
+            printnum=request.POST.get('printnum')
+            record=GW_pre_table.objects.get(id=record_id,PrintNum=printnum)
+            record.staticcode='POST'
+            record.save()
+            gw_list=GW_pre_table.objects.filter(staticcode='CHECKED')
+            data=serializers.serialize('json',gw_list)
+        return JsonResponse(data,safe=False)
+
+@method_decorator([login_required,csrf_protect],name='dispatch')
+class PRD_View(View):
+    # 浏览器正常访问制作报表页
+    def get(self,request):
+        info_dict={'username':request.user.username,'first_name':request.user.first_name}
+        template_name='Tango_app/prd.html'
+        gw_list=PRO_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT')
+        form_list=[]
+        print('进入方法')
+        prd_form=PRO_forms()
+
+        if request.user.is_authenticated():
+            form=PRO_forms(request.POST)
+            if form.is_valid():
+                record=form.save(commit=False)
+                record.createBy=request.user.first_name
+                record.save()
+                assign_perm('Tango_app.prd_draft_post',request.user,record)
+            prd_list=PRO_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT')
+            for item in gw_list:
+                form_list.append(item)
+            info_dict['prd_form']=prd_form
+            info_dict['form_list']=form_list
+            # return JsonResponse(data,safe=False)
+        else:
+            return HttpResponseRedirect('/Tango_app/login')
+        return render(request,template_name,info_dict)
 
     def post(self,request):
-        pass
+        template_name='Tango_app/prd.html'
+        info_dict={'username':request.user.username,'first_name':request.user.first_name}
+        form_list=[]
+        prd_form=PRO_forms()
+        if request.user.is_authenticated():
+            form=PRO_forms(request.POST)
+            if form.is_valid():
+                record=form.save(commit=False)
+                record.createBy=request.user.first_name
+                record.save()
+                assign_perm('Tango_app.prd_draft_post',request.user,record)
+            gw_list=PRO_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT')
+            for item in gw_list:
+                form_list.append(item)
+            info_dict['prd_form']=prd_form
+            info_dict['form_list']=form_list
+            # return JsonResponse(data,safe=False)
+        else:
+            return HttpResponseRedirect('/Tango_app/login')
+        return render(request,template_name,info_dict)
