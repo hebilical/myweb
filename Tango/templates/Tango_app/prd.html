@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {% load static %}
+    <link rel="stylesheet" href='{% static "bootstrap-3.3.7-dist/css/bootstrap.css" %}'>
+    <link rel="stylesheet" href='{% static "bootstrap-table/dist/bootstrap-table.css" %}'>
+    <link rel="stylesheet" href='{% static "bootstrap3-editable/css/bootstrap-editable.css" %}'>
+
+    <!-- <link rel="stylesheet" href="./css/gw.css"> -->
+    <script type="text/javascript" src='{% static "JS/jquery-3.2.1.js" %}'>
+
+    </script>
+    <script type="text/javascript" src='{% static "bootstrap-3.3.7-dist/js/bootstrap.js" %}'>
+
+    </script>
+    <script type="text/javascript"  src='{% static "bootstrap-table/dist/bootstrap-table.js" %}'>
+
+    </script>
+    <!-- 中文支持 -->
+
+
+    <script type="text/javascript" src='{% static "bootstrap-table/dist/locale/bootstrap-table-zh-CN.js" %}'>
+  // 支持表格导出
+    </script>
+    <script type="text/javascript" src='{% static "tableExport.jquery.plugin/tableExport.js" %}'>
+
+    </script>
+    <script type="text/javascript" src='{% static "tableExport.jquery.plugin/libs/js-xlsx/xlsx.core.min.js" %}'>
+
+    </script>
+
+    <script type="text/javascript"  src='{% static "bootstrap-table/dist/extensions/export/bootstrap-table-export.js" %}'>
+
+    </script>
+    <!-- 支持表格在线编辑 -->
+
+    <script type="text/javascript" src='{% static "bootstrap3-editable/js/bootstrap-editable.js" %}' >
+
+    </script>
+    <script type="text/javascript"  src='{% static "bootstrap-table/dist/extensions/editable/bootstrap-table-editable.js" %}'>
+
+    </script>
+    <!--  处理Django的CSRF保护-->
+
+    <script type="text/javascript" src='{% static "JS/Ajax.js" %}'>
+
+    </script>
+    <script type="text/javascript" src='{% static "JS/prd.js" %}'>
+
+    </script>
+    <meta charset="utf-8">
+    <title>制作编辑页</title>
+  </head>
+  <body>
+    <h2>制作记录页</h2>
+  <a href="../">Home</a>
+    <div class="userInfo">
+      <label>当前用户:{{username}}</label>
+      <br>
+      <label>姓名:{{first_name}}</label>
+      <br>
+      <a href="/Tango_app/login">退出登录</a>
+    </div>
+    <br>
+    <div class="prd_input_Part">
+      <form class="" action="" method="post">
+      {% csrf_token %}
+      {{prd_form}}
+      <br>
+      <button id='sub_btn' type="submit" name="">确认</button>
+    </form>
+    </div>
+    <div class="prd_show_part">
+    <button type="button" id='get_draft' name="button">查看初稿</button>
+    <button type="button" id='get_post' class='get_record' name="button">查看已过帐</button>
+    <button type="button" id='get_checked' class='get_record' name="button">查看已批核</button>
+    <button type="button" id='get_del' class='get_record' name="button">查看已删除</button>
+      <table id='prd_table' data-pagination="true" data-search="true" data-toggle="table">
+        <tr >
+          <th >ID</th>
+          <th >印号</th>
+          <th>印件名陈</th>
+          <th>开本</th>
+          <th>日期</th>
+          <th>工作内容</th>
+          <th>完成数</th>
+          <th>备注</th>
+          <th>难度系数</th>
+          <th>创建人</th>
+          <th>创建时间</th>
+          <th>当前状态</th>
+          <th>相关操作</th>
+        </tr>
+          {% for item in form_list %}
+            <tr>
+              <td class="prd_pk">{{ item.id }}</td>
+              <td class="prd_printnum">{{item.PrintNum}}</td>
+              <td>{{item.PrintName}}</td>
+              <td>{{item.get_sidetype_display}}</td>
+              <td>{{item.WorkData|date:'Y-m-d'}}</td>
+              <td>{{item.get_WorkType_display}}</td>
+              <td>{{item.FinishQty}}</td>
+              <td>{{item.remark}}</td>
+              <td>{{item.K_val}}</td>
+              <td>{{item.createBy}}</td>
+              <td>{{item.createtime|date:'Y-m-d H:i:s'}}</td>
+              <td>{{item.get_staticcode_display}}</td>
+              <td>
+                <button type="button" class='mdf_btn' name="del_button">删除</button>
+                <button type="button"  class='mdf_btn' name="post_button">过帐</button>
+              </td>
+            </tr>
+
+
+          {% endfor  %}
+
+      </table>
+
+    </div>
+
+
+  </body>
+</html>

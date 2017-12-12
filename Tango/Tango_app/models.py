@@ -114,58 +114,70 @@ class GW_pre_table(models.Model):  #公务表
         )
 
 
-# class PRO_table (models.Model): #制作表
-#     PRO_WORKTYPE_CHOICES=(
-#         ('SJ','收集'),
-#         ('ZZJC','制作检查'),
-#         ('XT','修图'),
-#         ('TD','褪底'),
-#         ('ZZ','制作'),
-#         ('GB','改版'),
-#         ('FP','发排'),
-#         ('PDF_FP','PDF发排'),
-#         ('PDF_TWJ','PDF替文件'),
-#         ('PDF_GB','PDF改版'),
-#         ('CSMY','出数码样'),
-#         ('CLZ','出蓝纸'),
-#         ('KGP','克光盘'),
-#     )
-#
-#     STATIC_CHOICES=(
-#         ('DRAFT','初稿'),
-#         ('POST','已过帐'),
-#         ('CHECKED','已审核'),
-#         ('DELETED','已删除'),
-#     )
-#     WORKTIMETYPE_CHOICES=(
-#         ('A','白班'),
-#         ('B','夜班'),
-#     )
-#     PrintNum=models.CharField(max_length=20,null=False)
-#     PrintName=models.CharField(max_length=200,null=False)
-#     SubCode=models.CharField(max_length=10,default='A')
-#     WorkType=models.CharField(max_length=20,null=False,choices=PRO_WORKTYPE_CHOICES)
-#     WorkData=models.DateField(null=True)
-#     WorkTimeType=models.CharField(max_length=10,default='A',choices=WORKTIMETYPE_CHOICES)
-#     FinishQty=models.IntegerField(default=0)
-#     K_val=models.FloatField(default=0.0)#难度系数
-#     LeaderCode=models.CharField(max_length=20)
-#     LeaderName=models.CharField(max_length=50)
-#     WorkStartTime=models.DateTimeField(auto_now=False,null=True)
-#     WorkEndTime=models.DateTimeField(auto_now=False,null=True)
-#     createtime=models.DateTimeField(auto_now=True)
-#     createBy=models.CharField(max_length=20,null=True)
-#     updatetime=models.DateTimeField(auto_now=False,null=True)
-#     updateBy=models.CharField(max_length=20,null=True)
-#     posttime=models.DateTimeField(auto_now=False,null=True)
-#     postBy=models.CharField(max_length=20,null=True)
-#     CheckTime=models.DateTimeField(auto_now=False,null=True)
-#     CheckBy=models.CharField(max_length=20,null=True)
-#     staticcode=models.CharField(max_length=20,default='DRAFT',choices=STATIC_CHOICES)
-#     remark=models.TextField(max_length=200)
-#     class Meta(object):
-#
-#
+
+
+class PRO_table (models.Model): #制作表
+    PRO_WORKTYPE_CHOICES=(
+        ('SJ','收集'),
+        ('ZZJC','制作检查'),
+        ('XT','修图'),
+        ('TD','褪底'),
+        ('ZZ','制作'),
+        ('GB','改版'),
+        ('FP','发排'),
+        ('PDF_FP','PDF发排'),
+        ('PDF_TWJ','PDF替文件'),
+        ('PDF_GB','PDF改版'),
+        ('CSMY','出数码样'),
+        ('CLZ','出蓝纸'),
+        ('KGP','克光盘'),
+    )
+
+    STATIC_CHOICES=(
+        ('DRAFT','初稿'),
+        ('POST','已过帐'),
+        ('CHECKED','已审核'),
+        ('DELETED','已删除'),
+    )
+    WORKTIMETYPE_CHOICES=(
+        ('A','白班'),
+        ('B','夜班'),
+    )
+    PrintNum=models.CharField(max_length=20,null=False)
+    PrintName=models.CharField(max_length=200,null=False)
+    SubCode=models.CharField(max_length=10,default='A')
+    WorkType=models.CharField(max_length=20,null=False,choices=PRO_WORKTYPE_CHOICES)
+    WorkData=models.DateField(null=True)
+    WorkTimeType=models.CharField(max_length=10,default='A',choices=WORKTIMETYPE_CHOICES)
+    FinishQty=models.IntegerField(default=0)
+    K_val=models.FloatField(default=0.0)#难度系数
+    LeaderCode=models.CharField(max_length=20)
+    LeaderName=models.CharField(max_length=50)
+    WorkStartTime=models.DateTimeField(auto_now=False,null=True)
+    WorkEndTime=models.DateTimeField(auto_now=False,null=True)
+    createtime=models.DateTimeField(auto_now_add=True)
+    createBy=models.CharField(max_length=20,null=True)
+    updatetime=models.DateTimeField(auto_now=False,null=True)
+    updateBy=models.CharField(max_length=20,null=True)
+    posttime=models.DateTimeField(auto_now=False,null=True)
+    postBy=models.CharField(max_length=20,null=True)
+    CheckTime=models.DateTimeField(auto_now=False,null=True)
+    CheckBy=models.CharField(max_length=20,null=True)
+    staticcode=models.CharField(max_length=20,default='DRAFT',choices=STATIC_CHOICES)
+    remark=models.CharField(max_length=200)
+    class Meta(object):
+        permissions=(
+            ('prd_draft_post','制作初稿到过帐'),
+            ('prd_post_checked','制作已过帐记录审批'),
+            ('prd_post_draft','制作已过帐发还到初稿'),
+            ('prd_checked_draft','制作已批核发还到初稿'),
+            ('prd_delete','制作初稿删除'),
+            ('prd_post_delete','制作已过帐删除'),
+            ('prd_checked_delete','制作已批核删除'),
+            ('prd_delete_draft','制作已经删除到初稿'),
+        )
+
+
 #
 # class DF_table(models.Model): #电分表
 #     DF_WORKYTPE_CHOICES=(

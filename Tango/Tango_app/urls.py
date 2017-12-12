@@ -1,5 +1,5 @@
 from django.conf.urls import  url
-from Tango_app.views import IndexView,AboutView,LoginView ,GWView,RegisterView,GW_Mdf_View ,GW_AjaxView,GW_MdfView_ajax
+from Tango_app.views import IndexView,AboutView,LoginView ,GWView,RegisterView,GW_Mdf_View ,GW_AjaxView,GW_MdfView_ajax,PRD_View
 urlpatterns=[
                 url(r'^$',IndexView.as_view()),
                 url(r'^about', AboutView.as_view()),
@@ -10,4 +10,5 @@ urlpatterns=[
                 url(r'^gw/modify/$',GW_Mdf_View.as_view()),
                 url(r'^gwajax',GW_AjaxView.as_view()),
                 url(r'^gw/modify_ajax',GW_MdfView_ajax.as_view()),
+                url(r'prd/',PRD_View.as_view()),
             ]

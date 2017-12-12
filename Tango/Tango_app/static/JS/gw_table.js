@@ -21,7 +21,7 @@ $('.get_record').on('click', function(event) {
   /* Act on the event */
   var record_type={
     get_post:'POST',
-    get_check:'CHECKED',
+    get_checked:'CHECKED',
     get_del:'DELETED',
   };
   var class_type=$(this).attr('id');

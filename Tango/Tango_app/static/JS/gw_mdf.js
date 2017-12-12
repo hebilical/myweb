@@ -17,12 +17,9 @@ return cookieValue;
 
 $(document).ready(function () {
 
-  // $('#gw_table tr').css('background','');
 
   /* 系数修改按钮点击事件,将信息提交到后台,并且返回修改后的数据  */
   $('.static_btn').on('click',function () {
-
-
       /* Act on the event */
       var type_code=$(this).attr('id');
       var btn_type={get_post:'POST',get_k_setted:'CHECKED',get_del:'DELETED'}  ;
@@ -157,7 +154,67 @@ $(document).ready(function () {
 
               ],
               onEditableSave:function () {
-                alert('保存成功');
+
+
+              },
+              onClickRow:function(row,$element,field) {
+
+              },
+              onClickCell:function (field, value, row, $element) {
+
+
+
+                if (field==='operation') {
+                  var k_val= $element.closest('tr').find('a').html();
+
+
+                  $.ajax({
+                    url: '/Tango_app/gw/modify_ajax',
+                    type: 'POST',
+
+                    data: {record_id: row.record_id,printnum:row.printnum,k_val:k_val,
+                      k_set:true//设置系数时候为true,发还为false
+                    },
+                    success:function (data) {
+
+                      var json=$.parseJSON(data);
+                      var jsondata=[];
+                      $.each(json,function(index, el) {
+
+
+            // 创建和json对象存放单条记录
+                        var unit_json={
+                          record_id:el.pk,
+                          printnum:el.fields.PrintNum,
+                          printname:el.fields.PrintName,
+                          pagesize:size_type[el.fields.sidetype],
+                          workdate:el.fields.WorkData,
+                          worktype:work_type[el.fields.WorkType],
+                          FinishQty:el.fields.FinishQty,
+                          remark:el.fields.remark,
+                          k_val:el.fields.K_val,
+                          static_code:static_type[el.fields.staticcode],
+                          createBy:el.fields.createBy,
+                          createtime:el.fields.createtime,
+                          postby:el.fields.postBy,
+                          posttime:el.fields.posttime,
+                          checkBy:el.fields.CheckBy,
+                          checkTime:el.fields.CheckTime
+
+                        };
+                        jsondata.push(unit_json);
+
+                      });
+
+                      $('#gw_table_k').bootstrapTable('load',jsondata);
+
+
+                    }
+
+                  }
+
+              );
+                }
               },
 
               exportDataType:'all',
@@ -218,7 +275,7 @@ $(document).ready(function () {
 
 
       } else {
-        // 非过帐状态不可进行操作
+        // 非过帐状态可以进行发还操作
         $.ajax({
           url:'/Tango_app/gw/modify_ajax',
           type:'GET',
@@ -325,9 +382,65 @@ $(document).ready(function () {
                 field:'checkTime',
                 title:'审核时间',
               },
+              {
+                field:'operation_to_post',
+                title:'操作',
+                width:100,
+                formatter:function(value,row,index){
+                                    var strHtml ='<button class="k_checked_btn">'+'发还'+'</button>';
+                                    return strHtml;
+                                },
+                // editable:{defaultValue:'test'},
+
+              }
 
 
               ],
+              onClickCell:function (field,value,row,$element) {
+                $.ajax({
+                  url: '/Tango_app/gw/modify_ajax',
+                  type: 'POST',
+
+                  data: {record_id: row.record_id,printnum:row.printnum,k_set:false},
+                  success:function (data) {
+
+                    var json=$.parseJSON(data);
+                    var jsondata=[];
+                    $.each(json,function(index, el) {
+
+
+          // 创建和json对象存放单条记录
+                      var unit_json={
+                        record_id:el.pk,
+                        printnum:el.fields.PrintNum,
+                        printname:el.fields.PrintName,
+                        pagesize:size_type[el.fields.sidetype],
+                        workdate:el.fields.WorkData,
+                        worktype:work_type[el.fields.WorkType],
+                        FinishQty:el.fields.FinishQty,
+                        remark:el.fields.remark,
+                        k_val:el.fields.K_val,
+                        static_code:static_type[el.fields.staticcode],
+                        createBy:el.fields.createBy,
+                        createtime:el.fields.createtime,
+                        postby:el.fields.postBy,
+                        posttime:el.fields.posttime,
+                        checkBy:el.fields.CheckBy,
+                        checkTime:el.fields.CheckTime
+
+                      };
+                      jsondata.push(unit_json);
+
+                    });
+                    $('#gw_table_k').bootstrapTable('load',jsondata);
+
+                  }
+                });
+
+
+
+
+              },
 
 
               exportDataType:'all',
@@ -390,5 +503,8 @@ $(document).ready(function () {
 
 
   });
+
+
+
 
 });
