@@ -1,5 +1,5 @@
 from django.conf.urls import  url
-from Tango_app.views import IndexView,AboutView,LoginView ,GWView,RegisterView,GW_Mdf_View,GW_AjaxView,GW_MdfView_ajax,PRD_View,PRD_ViewAjax,PRD_MdfView,PRD_MdfViewAjax,DF_View,DF_AjaxView,DF_MdfView,DF_MdfViewAjax,ZJ_View,ZJ_AjaxView
+from Tango_app.views import IndexView,AboutView,LoginView ,GWView,RegisterView,GW_Mdf_View,GW_AjaxView,GW_MdfView_ajax,PRD_View,PRD_ViewAjax,PRD_MdfView,PRD_MdfViewAjax,DF_View,DF_AjaxView,DF_MdfView,DF_MdfViewAjax,ZJ_View,ZJ_AjaxView,ZJ_MdfView,ZJ_MdfViewAjax
 urlpatterns=[
                 url(r'^$',IndexView.as_view()),#主页
                 url(r'^about', AboutView.as_view()),
@@ -19,5 +19,7 @@ urlpatterns=[
                 url(r'^df/modify/$',DF_MdfView.as_view()),#电分修改页
                 url(r'^df/modify_ajax/$',DF_MdfViewAjax.as_view()),#电分修改页Ajax接收
                 url(r'^zj/$',ZJ_View.as_view()),
-                url(r'zjAjax/$',ZJ_AjaxView.as_view()),
+                url(r'^zjAjax/$',ZJ_AjaxView.as_view()),
+                url(r'^zj/modify/$',ZJ_MdfView.as_view()),
+                url(r'^zj/modify_ajax/$',ZJ_MdfViewAjax.as_view()),
             ]

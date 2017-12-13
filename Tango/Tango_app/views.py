@@ -583,3 +583,60 @@ class ZJ_AjaxView(View):
                 prd_list=ZJ_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT')
         data=serializers.serialize('json',prd_list)
         return JsonResponse(data,safe=False)
+
+@method_decorator([login_required,csrf_protect],name='dispatch')
+class ZJ_MdfView(View):
+    def get(self,request):
+        template_name='Tango_app/zj_mdf.html'
+        info_dict={'username':request.user.username,'first_name':request.user.first_name}
+        return render(request,template_name,info_dict)
+
+
+
+    def post(self,request):
+
+        pass
+
+
+
+
+@method_decorator([login_required,csrf_protect],name='dispatch')
+class ZJ_MdfViewAjax(View):
+    def get(self,request):
+        if request.is_ajax:
+            staict_code=request.GET.get('static_code')
+            print(staict_code)
+            gw_list=ZJ_table.objects.filter(staticcode=staict_code)
+            data=serializers.serialize('json',gw_list)
+            return JsonResponse(data,safe=False)
+        else:
+            pass
+
+    def post(self,request):
+            #是否是设置系数
+        if request.is_ajax and request.POST.get('k_set')=='true':
+            # print(request.POST.get('k_set'))
+            record_id=request.POST.get('record_id')
+            printnum=request.POST.get('printnum')
+            k_val=request.POST.get('k_val')
+
+            print(k_val)
+
+            record=ZJ_table.objects.get(id=record_id,PrintNum=printnum)
+            record.K_val=k_val
+            record.staticcode='CHECKED'
+            record.CheckBy=request.user.username
+            record.CheckTime=datetime.now()
+            record.save()
+            gw_list=ZJ_table.objects.filter(staticcode='POST')
+            data=serializers.serialize('json',gw_list)
+            # 不是设置工务系数,就是发还操作
+        else:
+            record_id=request.POST.get('record_id')
+            printnum=request.POST.get('printnum')
+            record=ZJ_table.objects.get(id=record_id,PrintNum=printnum)
+            record.staticcode='POST'
+            record.save()
+            gw_list=ZJ_table.objects.filter(staticcode='CHECKED')
+            data=serializers.serialize('json',gw_list)
+        return JsonResponse(data,safe=False)
