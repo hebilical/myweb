@@ -1,6 +1,6 @@
 
 from django.forms import ModelForm,HiddenInput
-from Tango_app.models import GW_pre_table,PRO_table,DF_table
+from Tango_app.models import GW_pre_table,PRO_table,DF_table,ZJ_table
 
 class GW_forms(ModelForm):
     class Meta(object):
@@ -50,8 +50,9 @@ class PRO_forms(ModelForm):
         model=PRO_table
         fields=['PrintNum',
                 'PrintName',
-
+                'WorkTimeType',
                 'WorkType',
+
                 'WorkData',
                 'FinishQty',
                 'K_val',
@@ -64,6 +65,7 @@ class PRO_forms(ModelForm):
                 'sidetype':'开本',
                 'WorkType':'工作内容',
                 'WorkData':'工作日期',
+                'WorkTimeType':'班次',
                 'FinishQty':'完成数量',
                 'K_val':'难度系数',
                 'remark':'备注'
@@ -120,6 +122,48 @@ class DF_forms(ModelForm):
         }
     def __init__(self,*args,**kwargs):
         super(DF_forms,self).__init__(*args,**kwargs)
+        self.fields['createBy'].required=False
+        self.fields['postBy'].required=False
+        self.fields['CheckBy'].required=False
+        self.fields['remark'].required=False
+
+
+
+class ZJ_forms(ModelForm):
+    class Meta(object):
+
+        """docstring for Meta."""
+
+        model=ZJ_table
+        fields=['PrintNum',
+                'PrintName',
+                'WorkTimeType',
+                'WorkType',
+                'WorkData',
+                'FinishQty',
+                'K_val',
+                'createBy',
+                'postBy',
+                'CheckBy',
+                'remark']
+        labels={'PrintNum':'印号',
+                'PrintName':'印件名',
+
+                'WorkType':'工作内容',
+                'WorkData':'工作日期',
+                'WorkTimeType':'班次',
+                'FinishQty':'完成数量',
+                'K_val':'难度系数',
+                'remark':'备注'
+                }
+        widgets={
+                'createBy': HiddenInput(),
+                'postBy':HiddenInput(),
+                'CheckBy':HiddenInput(),
+                'K_val':HiddenInput(),
+        }
+    def __init__(self,*args,**kwargs):
+        super(ZJ_forms,self).__init__(*args,**kwargs)
         self.fields['createBy'].required=False
         self.fields['postBy'].required=False
         self.fields['CheckBy'].required=False

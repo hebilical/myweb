@@ -41,7 +41,10 @@ $(document).ready(function () {
                   CHECKED:'已审核',
                   DELETED:'已删除',
             };
-
+            var date_type={
+              A:'白班',
+              B:'夜班'
+            };
 
             // 下面进行表格初始化
             $('#prd_table_k').bootstrapTable('destroy');
@@ -71,6 +74,10 @@ $(document).ready(function () {
                 title:'工作日期',
                 sortable:true,
                 order:'desc'
+              },
+              {
+                field:'date_type',
+                title:'班次',
               },
               {
                 field:'worktype',
@@ -181,6 +188,7 @@ $(document).ready(function () {
                   printnum:el.fields.PrintNum,
                   printname:el.fields.PrintName,
                   workdate:el.fields.WorkData,
+                  date_type:date_type[el.fields.WorkTimeType],
                   worktype:work_type[el.fields.WorkType],
                   work_start_time:el.fields.WorkStartTime,
                   work_end_time:el.fields.WorkEndTime,
@@ -246,6 +254,7 @@ $(document).ready(function () {
                     printnum:el.fields.PrintNum,
                     printname:el.fields.PrintName,
                     workdate:el.fields.WorkData,
+                    date_type:date_type[el.fields.WorkTimeType],
                     worktype:work_type[el.fields.WorkType],
                     work_start_time:el.fields.WorkStartTime,
                     work_end_time:el.fields.WorkEndTime,
@@ -297,6 +306,10 @@ $(document).ready(function () {
                   CLZ:'出蓝纸',
                   KGP:'克光盘',
             };
+            var date_type= {
+              A:'白班',
+              B:'夜班',
+            };
             var staict_type={
                   DRAFT:'初稿',
                   POST:'已过帐',
@@ -329,6 +342,10 @@ $(document).ready(function () {
                 title:'工作日期',
                 sortable:true,
                 order:'desc'
+              },
+              {
+                field:'date_type',
+                title:'班次',
               },
               {
                 field:'worktype',
@@ -422,6 +439,7 @@ $(document).ready(function () {
                           printnum:el.fields.PrintNum,
                           printname:el.fields.PrintName,
                           workdate:el.fields.WorkData,
+                          date_type:date_type[el.fields.WorkTimeType],
                           worktype:work_type[el.fields.WorkType],
                           work_start_time:el.fields.WorkStartTime,
                           work_end_time:el.fields.WorkEndTime,
@@ -490,6 +508,7 @@ $(document).ready(function () {
               printnum:el.fields.PrintNum,
               printname:el.fields.PrintName,
               workdate:el.fields.WorkData,
+              date_type:date_type[el.fields.WorkTimeType],
               worktype:work_type[el.fields.WorkType],
               work_start_time:el.fields.WorkStartTime,
               work_end_time:el.fields.WorkEndTime,

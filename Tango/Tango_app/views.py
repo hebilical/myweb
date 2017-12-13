@@ -8,8 +8,8 @@ from django.contrib.auth.models import User
 # from Tango_app.forms import GW_forms
 from django.http import HttpResponse,Http404,HttpResponseRedirect,JsonResponse
 from django.views.generic.base import View
-from Tango_app.models import Article ,Category,GW_pre_table,PRO_table,DF_table
-from Tango_app.forms import GW_forms , PRO_forms, DF_forms
+from Tango_app.models import Article ,Category,GW_pre_table,PRO_table,DF_table,ZJ_table
+from Tango_app.forms import GW_forms , PRO_forms, DF_forms,ZJ_forms
 from guardian.shortcuts import assign_perm
 from django.core import serializers
 # Create your views here.
@@ -294,6 +294,9 @@ class PRD_ViewAjax(View):
                 prd_list=PRO_table.objects.filter(createBy=request.user.first_name,staticcode=static_code)
         data=serializers.serialize('json',prd_list)
         return JsonResponse(data,safe=False)
+
+
+
 # 浏览器正常访问制作修改页
 @method_decorator([login_required,csrf_protect],name='dispatch')
 class PRD_MdfView(View):
@@ -402,7 +405,6 @@ class DF_View(View):   #浏览器正常访问电分页面
         info_dict['df_form']=df_form
         return render(request,template_name,info_dict)
 
-
 @method_decorator([login_required,csrf_protect],name='dispatch')
 class DF_AjaxView(View):
     def get(self,request):
@@ -492,4 +494,92 @@ class DF_MdfViewAjax(View):
             record.save()
             gw_list=DF_table.objects.filter(staticcode='CHECKED')
             data=serializers.serialize('json',gw_list)
+        return JsonResponse(data,safe=False)
+
+
+
+@method_decorator([login_required,csrf_protect],name='dispatch')
+class ZJ_View(View):   #浏览器正常访问质检页面
+    def get(self,request):
+        info_dict={'username':request.user.username,'first_name':request.user.first_name}
+        template_name='Tango_app/zj.html'
+
+
+        zj_form=ZJ_forms()
+
+        if request.user.is_authenticated():
+            form=ZJ_forms(request.POST)
+            if form.is_valid():
+                record=form.save(commit=False)
+                record.createBy=request.user.first_name
+                record.save()
+                assign_perm('Tango_app.zj_draft_post',request.user,record)
+
+            info_dict['zj_form']=zj_form
+
+        else:
+            return HttpResponseRedirect('/Tango_app/login')
+        return render(request,template_name,info_dict)
+
+    def post(self,request):
+        template_name='Tango_app/zj.html'
+        info_dict={'username':request.user.username,'first_name':request.user.first_name}
+
+        zj_form=ZJ_forms()
+        if request.user.is_authenticated():
+
+            form=ZJ_forms(request.POST)
+
+
+            if form.is_valid():
+
+                record=form.save(commit=False)
+                record.createBy=request.user.first_name
+                record.save()
+                print('saved')
+                assign_perm('Tango_app.zj_draft_post',request.user,record)
+
+            # gw_list=PRO_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT')
+            # for item in gw_list:
+            #     form_list.append(item)
+
+            # info_dict['form_list']=form_list
+            # return JsonResponse(data,safe=False)
+        else:
+            return HttpResponseRedirect('/Tango_app/login')
+        info_dict['zj_form']=zj_form
+        return render(request,template_name,info_dict)
+
+
+
+@method_decorator([login_required,csrf_protect],name='dispatch')
+class ZJ_AjaxView(View):
+    def get(self,request):
+        if request.is_ajax:
+            static_code=request.GET.get('staict_code')
+            prd_list=ZJ_table.objects.filter(staticcode=static_code,createBy=request.user.first_name)
+            data=serializers.serialize('json',prd_list)
+        else:
+            data=[]
+        return JsonResponse(data,safe=False)
+
+    def post(self,request):
+        if request.is_ajax:
+            # print(request.POST.get('prd_id')+request.POST.get('prd_printnum'))
+            static_code=request.POST.get('static_code')
+            record=ZJ_table.objects.get(pk=int(request.POST.get('prd_id')),PrintNum=request.POST.get('prd_printnum'))
+            if static_code=='DELETED':
+                record.staticcode=static_code
+                record.save()
+                prd_list=ZJ_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT')
+
+            else:
+                record.WorkStartTime=request.POST.get('start_time')
+                record.WorkEndTime=request.POST.get('end_time')
+                record.staticcode=static_code
+                record.postBy=request.user.first_name
+                record.posttime=datetime.now()
+                record.save()
+                prd_list=ZJ_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT')
+        data=serializers.serialize('json',prd_list)
         return JsonResponse(data,safe=False)
