@@ -13,12 +13,13 @@ from Tango_app.forms import GW_forms , PRO_forms, DF_forms,ZJ_forms
 from guardian.shortcuts import assign_perm
 from django.core import serializers
 # Create your views here.
-
+@method_decorator([login_required,csrf_protect],name='dispatch')
 class IndexView(View):
 
     def get(self,request):
+        info_dict={'username':request.user.username,'first_name':request.user.first_name}
         template_name='Tango_app/index.html'
-        return render(request,template_name)
+        return render(request,template_name,info_dict)
 
 
 
@@ -65,10 +66,10 @@ class LoginView(View):
         user=authenticate(username=user_name,password=user_pswd)
         if user:
             if request.user.is_authenticated():
-                return HttpResponseRedirect('/Tango_app/gw')
+                return HttpResponseRedirect('/Tango_app/')
             else:
                 login(request,user)
-                return HttpResponseRedirect('/Tango_app/gw')
+                return HttpResponseRedirect('/Tango_app/')
         else:
             return HttpResponse ('无此用户!请确认您输入的用户名和密码是否无误.')
 

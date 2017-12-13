@@ -3,18 +3,37 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Tango_app page</title>
+    <meta http-equiv='X-UA-Compatible' content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tango_app印前报表</title>
+    <link rel="stylesheet" href='{% static "bootstrap-3.3.7-dist/css/bootstrap.css" %}'>
+    <script type="text/javascript" src='{% static "JS/jquery-3.2.1.js" %}'>
+
+    </script>
+    <script type="text/javascript" src='{% static "bootstrap-3.3.7-dist/js/bootstrap.js" %}'>
+
+    </script>
   </head>
   <body>
-    <div class="partone">
-      <a href="/Tango_app/about">about</a> <br>
+    <h1>华联印前报表</h1><br><div class="userInfo">
+      <label>当前用户:{{username}}</label>
+      <br>
+      <label>姓名:{{first_name}}</label>
+      <br>
+      <a href="/Tango_app/login">退出登录</a>
     </div>
-    <h1>welcome to my page!</h1><br>
-<div class="imgpart">
-  <img src="{% static 'images/pic.png' %}" alt="a girl !"><br>
-  <img src="{% static  'images/timg.jpg' %}" alt="a logo!">
+    <div class="partone">
+      <a href="/Tango_app/about"><h4>about</h4></a>
+      <a href="/Tango_app/gw"><h4>工务日报表</h4></a>
+      <a href="/Tango_app/gw/modify"><h4>工务记录系数修改</h4></a>
+      <a href="/Tango_app/prd"><h4>制作日报表</h4></a>
+      <a href="/Tango_app/prd/modify"><h4>制作日报表系数修改</h4></a>
+      <a href="/Tango_app/df"><h4>电分日报表</h4></a>
+      <a href="/Tango_app/df/modify"><h4>电分日报表系数修改</h4></a>
+      <a href="/Tango_app/zj"><h4>制作日报表</h4></a>
+      <a href="/Tango_app/zj/modify"><h4>制作日报表系数修改</h4></a>
+    </div>
 
-</div>
-    <p>written by {{ author }}</p>
+
   </body>
 </html>
