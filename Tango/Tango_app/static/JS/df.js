@@ -18,25 +18,22 @@ $('#id_WorkData').on('focus', function(event) {
 
     /* 点击查看初稿则刷新当前页 */
     $.ajax({
-      url: '/Tango_app/prdAjax',
+      url: '/Tango_app/dfAjax',
       type: 'GET',
       data: {staict_code: 'DRAFT'},
       success:function (data) {
         var json =$.parseJSON(data);
         var work_type={
-              SJ:'收集',
-              ZZJC:'制作检查',
-              XT:'修图',
-              TD:'褪底',
-              ZZ:'制作',
-              GB:'改版',
-              FP:'发排',
-              PDF_FP:'PDF发排',
-              PDF_TWJ:'PDF替文件',
-              PDF_GB:'PDF改版',
-              CSMY:'出数码样',
-              CLZ:'出蓝纸',
-              KGP:'克光盘',
+               SCAN_FS:'扫描反射稿',
+               SCAN_TS:'扫描透射稿',
+               SCAN_COPYDOT:'COPYDOT',
+               COR_NEW:'调色新作',
+               COR_GB:'调色改版',
+               COR_ZCTY:'追传统样',
+        };
+        var work_time={
+          A:'白班',
+          B:'夜班',
         };
         var staict_type={
               DRAFT:'初稿',
@@ -52,12 +49,14 @@ $('#id_WorkData').on('focus', function(event) {
                 record_id:el.pk,
                 printnum:el.fields.PrintNum,
                 printname:el.fields.PrintName,
+                date_type:work_time[el.fields.WorkTimeType],
                 workdate:el.fields.WorkData,
                 worktype:work_type[el.fields.WorkType],
                 work_start_time:el.fields.WorkStartTime,
                 work_end_time:el.fields.WorkEndTime,
                 FinishQty:el.fields.FinishQty,
-                k_val:el.fields.K_val,
+                Scan_K_val:el.fields.Scan_K_val,
+                Week_val:el.fields.Week_val,
                 remark:el.fields.remark,
                 static_code:staict_type[el.fields.staticcode],
                 createBy:el.fields.createBy,
@@ -70,8 +69,8 @@ $('#id_WorkData').on('focus', function(event) {
                 datajson.push(unit_json);
         });
 
-        $('#prd_table').bootstrapTable('destroy');
-        $('#prd_table').bootstrapTable(
+        $('#df_table').bootstrapTable('destroy');
+        $('#df_table').bootstrapTable(
           {
             columns:[
               {
@@ -137,8 +136,12 @@ $('#id_WorkData').on('focus', function(event) {
               title:'完成数'
             },
             {
-              field:'k_val',
-              title:'难度系数'
+              field:'Scan_K_val',
+              title:'扫描系数'
+            },
+            {
+              field:'Week_val',
+              title:'期刊系数'
             },
             {
               field:'remark',
@@ -230,7 +233,7 @@ $('#id_WorkData').on('focus', function(event) {
                  else{
                    alert(record_id+record_printnum);
                    $.ajax({
-                     url: '/Tango_app/prdAjax/',
+                     url: '/Tango_app/dfAjax/',
                      type: 'POST',
                      data: {
                        prd_id:record_id,
@@ -242,19 +245,16 @@ $('#id_WorkData').on('focus', function(event) {
                      success:function (data) {
                        var json =$.parseJSON(data);
                        var work_type={
-                             SJ:'收集',
-                             ZZJC:'制作检查',
-                             XT:'修图',
-                             TD:'褪底',
-                             ZZ:'制作',
-                             GB:'改版',
-                             FP:'发排',
-                             PDF_FP:'PDF发排',
-                             PDF_TWJ:'PDF替文件',
-                             PDF_GB:'PDF改版',
-                             CSMY:'出数码样',
-                             CLZ:'出蓝纸',
-                             KGP:'克光盘',
+                              SCAN_FS:'扫描反射稿',
+                              SCAN_TS:'扫描透射稿',
+                              SCAN_COPYDOT:'COPYDOT',
+                              COR_NEW:'调色新作',
+                              COR_GB:'调色改版',
+                              COR_ZCTY:'追传统样',
+                       };
+                       var work_time={
+                         A:'白班',
+                         B:'夜班',
                        };
                        var staict_type={
                              DRAFT:'初稿',
@@ -269,12 +269,14 @@ $('#id_WorkData').on('focus', function(event) {
                                record_id:el.pk,
                                printnum:el.fields.PrintNum,
                                printname:el.fields.PrintName,
+                               date_type:work_time[el.fields.WorkTimeType],
                                workdate:el.fields.WorkData,
                                worktype:work_type[el.fields.WorkType],
                                work_start_time:el.fields.WorkStartTime,
                                work_end_time:el.fields.WorkEndTime,
                                FinishQty:el.fields.FinishQty,
-                               k_val:el.fields.K_val,
+                               Scan_K_val:el.fields.Scan_K_val,
+                               Week_val:el.fields.Week_val,
                                remark:el.fields.remark,
                                static_code:staict_type[el.fields.staticcode],
                                createBy:el.fields.createBy,
@@ -286,7 +288,7 @@ $('#id_WorkData').on('focus', function(event) {
                                };
                                datajson.push(unit_json);
                        });
-                       $('#prd_table').bootstrapTable('load',datajson);
+                       $('#df_table').bootstrapTable('load',datajson);
 
 
                      }
@@ -303,7 +305,7 @@ $('#id_WorkData').on('focus', function(event) {
                if(field==='del_field'){
                  alert('删除');
                   $.ajax({
-                    url: '/Tango_app/prdAjax/',
+                    url: '/Tango_app/dfAjax/',
                     type: 'POST',
                     data: {
                       prd_id:record_id,
@@ -313,19 +315,16 @@ $('#id_WorkData').on('focus', function(event) {
                     success:function (data) {
                       var json =$.parseJSON(data);
                       var work_type={
-                            SJ:'收集',
-                            ZZJC:'制作检查',
-                            XT:'修图',
-                            TD:'褪底',
-                            ZZ:'制作',
-                            GB:'改版',
-                            FP:'发排',
-                            PDF_FP:'PDF发排',
-                            PDF_TWJ:'PDF替文件',
-                            PDF_GB:'PDF改版',
-                            CSMY:'出数码样',
-                            CLZ:'出蓝纸',
-                            KGP:'克光盘',
+                             SCAN_FS:'扫描反射稿',
+                             SCAN_TS:'扫描透射稿',
+                             SCAN_COPYDOT:'COPYDOT',
+                             COR_NEW:'调色新作',
+                             COR_GB:'调色改版',
+                             COR_ZCTY:'追传统样',
+                      };
+                      var work_time={
+                        A:'白班',
+                        B:'夜班',
                       };
                       var staict_type={
                             DRAFT:'初稿',
@@ -340,12 +339,14 @@ $('#id_WorkData').on('focus', function(event) {
                               record_id:el.pk,
                               printnum:el.fields.PrintNum,
                               printname:el.fields.PrintName,
+                              date_type:work_time[el.fields.WorkTimeType],
                               workdate:el.fields.WorkData,
                               worktype:work_type[el.fields.WorkType],
                               work_start_time:el.fields.WorkStartTime,
                               work_end_time:el.fields.WorkEndTime,
                               FinishQty:el.fields.FinishQty,
-                              k_val:el.fields.K_val,
+                              Scan_K_val:el.fields.Scan_K_val,
+                              Week_val:el.fields.Week_val,
                               remark:el.fields.remark,
                               static_code:staict_type[el.fields.staticcode],
                               createBy:el.fields.createBy,
@@ -357,7 +358,7 @@ $('#id_WorkData').on('focus', function(event) {
                               };
                               datajson.push(unit_json);
                       });
-                      $('#prd_table').bootstrapTable('load',datajson);
+                      $('#df_table').bootstrapTable('load',datajson);
 
 
                     }
@@ -373,7 +374,7 @@ $('#id_WorkData').on('focus', function(event) {
           }
 
         );//表格初始化结束
-        $('#prd_table').bootstrapTable('load',datajson);
+        $('#df_table').bootstrapTable('load',datajson);
       }
     });
 
@@ -382,37 +383,6 @@ $('#id_WorkData').on('focus', function(event) {
   });
 
 
-  $('#prd_table tr').on('click','.mdf_btn',function(event) {
-
-  /* Act on the event */
-  var prd_id=  $(this).closest('tr').find('.prd_pk').html();
-  var prd_printnum=$(this).closest('tr').find('.prd_printnum').html();
-  var modify_type={
-    del_button:'DELETED',
-    post_button:'POST',
-  };
-  var staict_code=$(this).attr('name');
-  alert(modify_type[staict_code]);
-  $.ajax({
-    url: '/Tango_app/prdAjax/',
-    type: 'POST',
-    data: {
-      prd_id:prd_id,
-      prd_printnum:prd_printnum,
-      static_code:modify_type[staict_code]
-    },
-    success:function (data) {
-      alert('Ajax成功返回');
-      // location.reload();
-
-    }
-  });
-
-
-
-
-
-});
 
 
 
@@ -426,8 +396,9 @@ $('.get_record').on('click', function(event) {
     get_checked:'CHECKED',
     get_del:'DELETED',
   };
+
   $.ajax({
-    url: '/Tango_app/prdAjax',
+    url: '/Tango_app/dfAjax',
     type: 'GET',
     data: {staict_code: record_type[class_type]},
     success:function (data) {
@@ -435,19 +406,16 @@ $('.get_record').on('click', function(event) {
 
       var json =$.parseJSON(data);
       var work_type={
-            SJ:'收集',
-            ZZJC:'制作检查',
-            XT:'修图',
-            TD:'褪底',
-            ZZ:'制作',
-            GB:'改版',
-            FP:'发排',
-            PDF_FP:'PDF发排',
-            PDF_TWJ:'PDF替文件',
-            PDF_GB:'PDF改版',
-            CSMY:'出数码样',
-            CLZ:'出蓝纸',
-            KGP:'克光盘',
+             SCAN_FS:'扫描反射稿',
+             SCAN_TS:'扫描透射稿',
+             SCAN_COPYDOT:'COPYDOT',
+             COR_NEW:'调色新作',
+             COR_GB:'调色改版',
+             COR_ZCTY:'追传统样',
+      };
+      var work_time={
+        A:'白班',
+        B:'夜班',
       };
       var staict_type={
             DRAFT:'初稿',
@@ -460,14 +428,17 @@ $('.get_record').on('click', function(event) {
       $.each(json,function(index, el) {
         // alert(data);
         var unit_json={
+              record_id:el.pk,
               printnum:el.fields.PrintNum,
               printname:el.fields.PrintName,
+              date_type:work_time[el.fields.WorkTimeType],
               workdate:el.fields.WorkData,
               worktype:work_type[el.fields.WorkType],
               work_start_time:el.fields.WorkStartTime,
               work_end_time:el.fields.WorkEndTime,
               FinishQty:el.fields.FinishQty,
-              k_val:el.fields.K_val,
+              Scan_K_val:el.fields.Scan_K_val,
+              Week_val:el.fields.Week_val,
               remark:el.fields.remark,
               static_code:staict_type[el.fields.staticcode],
               createBy:el.fields.createBy,
@@ -480,8 +451,8 @@ $('.get_record').on('click', function(event) {
               datajson.push(unit_json);
       });
 
-      $('#prd_table').bootstrapTable('destroy');
-      $('#prd_table').bootstrapTable(
+      $('#df_table').bootstrapTable('destroy');
+      $('#df_table').bootstrapTable(
         {
           columns:[{
             field:'printnum',
@@ -515,8 +486,12 @@ $('.get_record').on('click', function(event) {
             title:'完成数'
           },
           {
-            field:'k_val',
-            title:'难度系数'
+            field:'Scan_K_val',
+            title:'扫描系数'
+          },
+          {
+            field:'Week_val',
+            title:'期刊系数',
           },
           {
             field:'remark',
@@ -581,7 +556,7 @@ $('.get_record').on('click', function(event) {
 
         }
       );//表格初始化结束
-      $('#prd_table').bootstrapTable('load',datajson);
+      $('#df_table').bootstrapTable('load',datajson);
     }
   });
 

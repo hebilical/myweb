@@ -59,14 +59,14 @@
     <script type="text/javascript" src='{% static "JS/Ajax.js" %}'>
 
     </script>
-    <script type="text/javascript" src='{% static "JS/prd.js" %}'>
+    <script type="text/javascript" src='{% static "JS/df.js" %}'>
 
     </script>
     <meta charset="utf-8">
-    <title>制作编辑页</title>
+    <title>电分表编辑页</title>
   </head>
   <body>
-    <h2>制作记录页</h2>
+    <h2>电分记录新建页</h2>
   <a href="../">Home</a>
     <div class="userInfo">
       <label>当前用户:{{username}}</label>
@@ -76,20 +76,20 @@
       <a href="/Tango_app/login">退出登录</a>
     </div>
     <br>
-    <div class="prd_input_Part">
+    <div class="df_input_Part">
       <form class="" action="" method="post">
       {% csrf_token %}
-      {{prd_form}}
+      {{df_form}}
       <br>
       <button id='sub_btn' type="submit" name="">确认</button>
     </form>
     </div>
-    <div class="prd_show_part">
+    <div class="df_show_part">
     <button type="button" id='get_draft' name="button">查看初稿</button>
     <button type="button" id='get_post' class='get_record' name="button">查看已过帐</button>
     <button type="button" id='get_checked' class='get_record' name="button">查看已批核</button>
     <button type="button" id='get_del' class='get_record' name="button">查看已删除</button>
-      <table id='prd_table' data-pagination="true" data-search="true" data-toggle="table">
+      <table id='df_table' data-pagination="true" data-search="true" data-toggle="table">
 
       </table>
 

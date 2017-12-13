@@ -165,6 +165,8 @@ class PRO_table (models.Model): #制作表
     CheckBy=models.CharField(max_length=20,null=True)
     staticcode=models.CharField(max_length=20,default='DRAFT',choices=STATIC_CHOICES)
     remark=models.CharField(max_length=200)
+    def __str__(self):
+        return (self.PrintNum+'   '+self.PrintName)
     class Meta(object):
         permissions=(
             ('prd_draft_post','制作初稿到过帐'),
@@ -179,54 +181,68 @@ class PRO_table (models.Model): #制作表
 
 
 #
-# class DF_table(models.Model): #电分表
-#     DF_WORKYTPE_CHOICES=(
-#         ('SCAN_FS','扫描反射稿'),
-#         ('SCAN_TS','扫描透射稿'),
-#         ('SCAN_COPYDOT','COPYDOT'),
-#         ('COR_NEW','调色新作'),
-#         ('COR_GB','调色改版'),
-#         ('COR_ZCTY','追传统样'),
-#
-#     )
-#
-#     WORKTIMETYPE_CHOICES=(
-#         ('A','白班'),
-#         ('B','夜班'),
-#     )
-#
-#     STATIC_CHOICES=(
-#         ('DRAFT','初稿'),
-#         ('POST','已过帐'),
-#         ('CHECKED','已审核'),
-#         ('DELETED','已删除'),
-#     )
-#
-#
-#
-#     PrintNum=models.CharField(max_length=20,null=False)
-#     PrintName=models.CharField(max_length=200,null=False)
-#     SubCode=models.CharField(max_length=10,default='A')
-#     WorkType=models.CharField(max_length=20,choices=DF_WORKYTPE_CHOICES)
-#     WorkData=models.DateField(null=True)
-#     WorkTimeType=models.CharField(max_length=10,default='A',choices=WORKTIMETYPE_CHOICES)
-#     FinishQty=models.IntegerField(default=0)
-#     Scan_K_val=models.FloatField(default=0.0)#扫描难度系数
-#     Week_val=models.FloatField(default=0.0)#期刊难度系数
-#     LeaderCode=models.CharField(max_length=20)
-#     LeaderName=models.CharField(max_length=50)
-#     WorkStartTime=models.DateTimeField(auto_now=False,null=True)
-#     WorkEndTime=models.DateTimeField(auto_now=False,null=True)
-#     createtime=models.DateTimeField(auto_now=True)
-#     createBy=models.CharField(max_length=20,null=True)
-#     updatetime=models.DateTimeField(auto_now=False,null=True)
-#     updateBy=models.CharField(max_length=20,null=True)
-#     posttime=models.DateTimeField(auto_now=False,null=True)
-#     postBy=models.CharField(max_length=20,null=True)
-#     CheckTime=models.DateTimeField(auto_now=False,null=True)
-#     CheckBy=models.CharField(max_length=20,null=True)
-#     staticcode=models.CharField(max_length=20,default='DRAFT',choices=STATIC_CHOICES)
-#     remark=models.TextField(max_length=200)
+class DF_table(models.Model): #电分表
+    DF_WORKYTPE_CHOICES=(
+        ('SCAN_FS','扫描反射稿'),
+        ('SCAN_TS','扫描透射稿'),
+        ('SCAN_COPYDOT','COPYDOT'),
+        ('COR_NEW','调色新作'),
+        ('COR_GB','调色改版'),
+        ('COR_ZCTY','追传统样'),
+
+    )
+
+    WORKTIMETYPE_CHOICES=(
+        ('A','白班'),
+        ('B','夜班'),
+    )
+
+    STATIC_CHOICES=(
+        ('DRAFT','初稿'),
+        ('POST','已过帐'),
+        ('CHECKED','已审核'),
+        ('DELETED','已删除'),
+    )
+
+
+
+    PrintNum=models.CharField(max_length=20,null=False)
+    PrintName=models.CharField(max_length=200,null=False)
+    SubCode=models.CharField(max_length=10,default='A')
+    WorkType=models.CharField(max_length=20,choices=DF_WORKYTPE_CHOICES)
+    WorkData=models.DateField(null=True)
+    WorkTimeType=models.CharField(max_length=10,default='A',choices=WORKTIMETYPE_CHOICES)
+    FinishQty=models.IntegerField(default=0)
+    Scan_K_val=models.FloatField(default=0.0)#扫描难度系数
+    Week_val=models.FloatField(default=0.0)#期刊难度系数
+    LeaderCode=models.CharField(max_length=20)
+    LeaderName=models.CharField(max_length=50)
+    WorkStartTime=models.DateTimeField(auto_now=False,null=True)
+    WorkEndTime=models.DateTimeField(auto_now=False,null=True)
+    createtime=models.DateTimeField(auto_now_add=True)
+    createBy=models.CharField(max_length=20,null=True)
+    updatetime=models.DateTimeField(auto_now=False,null=True)
+    updateBy=models.CharField(max_length=20,null=True)
+    posttime=models.DateTimeField(auto_now=False,null=True)
+    postBy=models.CharField(max_length=20,null=True)
+    CheckTime=models.DateTimeField(auto_now=False,null=True)
+    CheckBy=models.CharField(max_length=20,null=True)
+    staticcode=models.CharField(max_length=20,default='DRAFT',choices=STATIC_CHOICES)
+    remark=models.CharField(max_length=200)
+    def __str__(self):
+        return (self.PrintNum+'   '+self.PrintName)
+    class Meta(object):
+        permissions=(
+            ('df_draft_post','电分初稿到过帐'),
+            ('df_post_checked','电分已过帐记录审批'),
+            ('df_post_draft','电分已过帐发还到初稿'),
+            ('df_checked_draft','电分已批核发还到初稿'),
+            ('df_delete','电分初稿删除'),
+            ('df_post_delete','电分已过帐删除'),
+            ('df_checked_delete','电分已批核删除'),
+            ('df_delete_draft','电分已经删除到初稿'),
+        )
+
 #
 # class OUT_table(models.Model):#输出表
 #     MACHINE_CHIOCES=(

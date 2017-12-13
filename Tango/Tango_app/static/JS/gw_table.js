@@ -181,7 +181,7 @@ $('.get_record').on('click', function(event) {
 
 });
 
-// 处理点击表格内操作按钮的事件,发送请求更新记录状态删除或者过帐
+// 处理点击表格内操作按钮的事件,发送请求,更新记录状态为删除或者过帐
   $('#gw_table tr').on('click', '.mdf_btn', function(event) {
 
     var gw_id=  $(this).closest('tr').find('.gw_pk').html();

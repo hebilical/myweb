@@ -5,11 +5,11 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_protect
 from django.utils.decorators import method_decorator
 from django.contrib.auth.models import User
-from Tango_app.forms import GW_forms
+# from Tango_app.forms import GW_forms
 from django.http import HttpResponse,Http404,HttpResponseRedirect,JsonResponse
 from django.views.generic.base import View
-from Tango_app.models import Article ,Category,GW_pre_table,PRO_table
-from Tango_app.forms import GW_forms , PRO_forms
+from Tango_app.models import Article ,Category,GW_pre_table,PRO_table,DF_table
+from Tango_app.forms import GW_forms , PRO_forms, DF_forms
 from guardian.shortcuts import assign_perm
 from django.core import serializers
 # Create your views here.
@@ -20,15 +20,7 @@ class IndexView(View):
         template_name='Tango_app/index.html'
         return render(request,template_name)
 
-# class ArticleView(View):
-#     def get(self,request):
-#         template_name='Tango_app/Article.html'
-#         return render(request,template_name)
-#
-#
-#
-#     def post(self,request):
-#         pass
+
 
 class AboutView(View):
 
@@ -196,7 +188,7 @@ class GW_MdfView_ajax(View):
     def post(self,request):
             #是否是设置系数
         if request.is_ajax and request.POST.get('k_set')=='true':
-            print(request.POST.get('k_set'))
+            # print(request.POST.get('k_set'))
             record_id=request.POST.get('record_id')
             printnum=request.POST.get('printnum')
             k_val=request.POST.get('k_val')
@@ -227,9 +219,9 @@ class PRD_View(View):
     def get(self,request):
         info_dict={'username':request.user.username,'first_name':request.user.first_name}
         template_name='Tango_app/prd.html'
-        gw_list=PRO_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT')
-        form_list=[]
-        print('进入方法')
+        # gw_list=PRO_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT')
+        # form_list=[]
+
         prd_form=PRO_forms()
 
         if request.user.is_authenticated():
@@ -240,11 +232,12 @@ class PRD_View(View):
                 record.save()
                 assign_perm('Tango_app.prd_draft_post',request.user,record)
             prd_list=PRO_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT')
-            for item in gw_list:
-                form_list.append(item)
+            # for item in gw_list:
+            #     form_list.append(item)
             info_dict['prd_form']=prd_form
-            info_dict['form_list']=form_list
+            # info_dict['form_list']=form_list
             # return JsonResponse(data,safe=False)
+
         else:
             return HttpResponseRedirect('/Tango_app/login')
         return render(request,template_name,info_dict)
@@ -252,7 +245,7 @@ class PRD_View(View):
     def post(self,request):
         template_name='Tango_app/prd.html'
         info_dict={'username':request.user.username,'first_name':request.user.first_name}
-        form_list=[]
+
         prd_form=PRO_forms()
         if request.user.is_authenticated():
             form=PRO_forms(request.POST)
@@ -262,11 +255,241 @@ class PRD_View(View):
                 record.save()
                 assign_perm('Tango_app.prd_draft_post',request.user,record)
             gw_list=PRO_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT')
-            for item in gw_list:
-                form_list.append(item)
+
             info_dict['prd_form']=prd_form
-            info_dict['form_list']=form_list
-            # return JsonResponse(data,safe=False)
+
         else:
             return HttpResponseRedirect('/Tango_app/login')
         return render(request,template_name,info_dict)
+
+
+@method_decorator([login_required,csrf_protect],name='dispatch')
+class PRD_ViewAjax(View):
+    def get(self,request):
+        if request.is_ajax:
+            static_code=request.GET.get('staict_code')
+            prd_list=PRO_table.objects.filter(staticcode=static_code,createBy=request.user.first_name)
+            data=serializers.serialize('json',prd_list)
+        else:
+            data=[]
+        return JsonResponse(data,safe=False)
+
+    def post(self,request):
+        if request.is_ajax:
+            # print(request.POST.get('prd_id')+request.POST.get('prd_printnum'))
+            static_code=request.POST.get('static_code')
+            record=PRO_table.objects.get(pk=int(request.POST.get('prd_id')),PrintNum=request.POST.get('prd_printnum'))
+            if static_code=='DELETED':
+                record.staticcode=static_code
+                record.save()
+                prd_list=PRO_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT')
+
+            else:
+                record.WorkStartTime=request.POST.get('start_time')
+                record.WorkEndTime=request.POST.get('end_time')
+                record.staticcode=static_code
+                record.postBy=request.user.first_name
+                record.posttime=datetime.now()
+                record.save()
+                prd_list=PRO_table.objects.filter(createBy=request.user.first_name,staticcode=static_code)
+        data=serializers.serialize('json',prd_list)
+        return JsonResponse(data,safe=False)
+# 浏览器正常访问制作修改页
+@method_decorator([login_required,csrf_protect],name='dispatch')
+class PRD_MdfView(View):
+    def get(self,request):
+        template_name='Tango_app/prd_mdf.html'
+        info_dict={'username':request.user.username,'first_name':request.user.first_name}
+        return render(request,template_name,info_dict)
+
+
+
+    def post(self,request):
+
+        pass
+
+
+@method_decorator([login_required,csrf_protect],name='dispatch')
+class PRD_MdfViewAjax(View):
+    def get(self,request):
+        if request.is_ajax:
+            staict_code=request.GET.get('static_code')
+            gw_list=PRO_table.objects.filter(staticcode=staict_code)
+            data=serializers.serialize('json',gw_list)
+            return JsonResponse(data,safe=False)
+        else:
+            pass
+
+    def post(self,request):
+            #是否是设置系数
+        if request.is_ajax and request.POST.get('k_set')=='true':
+            # print(request.POST.get('k_set'))
+            record_id=request.POST.get('record_id')
+            printnum=request.POST.get('printnum')
+            k_val=request.POST.get('k_val')
+            print (k_val)
+
+            record=PRO_table.objects.get(id=record_id,PrintNum=printnum)
+            record.K_val=k_val
+            record.staticcode='CHECKED'
+            record.CheckBy=request.user.username
+            record.CheckTime=datetime.now()
+            record.save()
+            gw_list=PRO_table.objects.filter(staticcode='POST')
+            data=serializers.serialize('json',gw_list)
+            # 不是设置工务系数,就是发还操作
+        else:
+            record_id=request.POST.get('record_id')
+            printnum=request.POST.get('printnum')
+            record=PRO_table.objects.get(id=record_id,PrintNum=printnum)
+            record.staticcode='POST'
+            record.save()
+            gw_list=PRO_table.objects.filter(staticcode='CHECKED')
+            data=serializers.serialize('json',gw_list)
+        return JsonResponse(data,safe=False)
+
+
+
+@method_decorator([login_required,csrf_protect],name='dispatch')
+class DF_View(View):   #浏览器正常访问电分页面
+    def get(self,request):
+        info_dict={'username':request.user.username,'first_name':request.user.first_name}
+        template_name='Tango_app/df.html'
+
+
+        df_form=DF_forms()
+
+        if request.user.is_authenticated():
+            form=DF_forms(request.POST)
+            if form.is_valid():
+                record=form.save(commit=False)
+                record.createBy=request.user.first_name
+                record.save()
+                assign_perm('Tango_app.df_draft_post',request.user,record)
+
+            info_dict['df_form']=df_form
+
+        else:
+            return HttpResponseRedirect('/Tango_app/login')
+        return render(request,template_name,info_dict)
+
+    def post(self,request):
+        template_name='Tango_app/df.html'
+        info_dict={'username':request.user.username,'first_name':request.user.first_name}
+
+        df_form=DF_forms()
+        if request.user.is_authenticated():
+
+            form=DF_forms(request.POST)
+
+
+            if form.is_valid():
+
+                record=form.save(commit=False)
+                record.createBy=request.user.first_name
+                record.save()
+                print('saved')
+                assign_perm('Tango_app.df_draft_post',request.user,record)
+
+            # gw_list=PRO_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT')
+            # for item in gw_list:
+            #     form_list.append(item)
+
+            # info_dict['form_list']=form_list
+            # return JsonResponse(data,safe=False)
+        else:
+            return HttpResponseRedirect('/Tango_app/login')
+        info_dict['df_form']=df_form
+        return render(request,template_name,info_dict)
+
+
+@method_decorator([login_required,csrf_protect],name='dispatch')
+class DF_AjaxView(View):
+    def get(self,request):
+        if request.is_ajax:
+            static_code=request.GET.get('staict_code')
+            prd_list=DF_table.objects.filter(staticcode=static_code,createBy=request.user.first_name)
+            data=serializers.serialize('json',prd_list)
+        else:
+            data=[]
+        return JsonResponse(data,safe=False)
+
+    def post(self,request):
+        if request.is_ajax:
+            # print(request.POST.get('prd_id')+request.POST.get('prd_printnum'))
+            static_code=request.POST.get('static_code')
+            record=DF_table.objects.get(pk=int(request.POST.get('prd_id')),PrintNum=request.POST.get('prd_printnum'))
+            if static_code=='DELETED':
+                record.staticcode=static_code
+                record.save()
+                prd_list=DF_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT')
+
+            else:
+                record.WorkStartTime=request.POST.get('start_time')
+                record.WorkEndTime=request.POST.get('end_time')
+                record.staticcode=static_code
+                record.postBy=request.user.first_name
+                record.posttime=datetime.now()
+                record.save()
+                prd_list=DF_table.objects.filter(createBy=request.user.first_name,staticcode=static_code)
+        data=serializers.serialize('json',prd_list)
+        return JsonResponse(data,safe=False)
+
+
+@method_decorator([login_required,csrf_protect],name='dispatch')
+class DF_MdfView(View):
+    def get(self,request):
+        template_name='Tango_app/df_mdf.html'
+        info_dict={'username':request.user.username,'first_name':request.user.first_name}
+        return render(request,template_name,info_dict)
+
+
+
+    def post(self,request):
+
+        pass
+
+
+
+
+@method_decorator([login_required,csrf_protect],name='dispatch')
+class DF_MdfViewAjax(View):
+    def get(self,request):
+        if request.is_ajax:
+            staict_code=request.GET.get('static_code')
+            print(staict_code)
+            gw_list=DF_table.objects.filter(staticcode=staict_code)
+            data=serializers.serialize('json',gw_list)
+            return JsonResponse(data,safe=False)
+        else:
+            pass
+
+    def post(self,request):
+            #是否是设置系数
+        if request.is_ajax and request.POST.get('k_set')=='true':
+            # print(request.POST.get('k_set'))
+            record_id=request.POST.get('record_id')
+            printnum=request.POST.get('printnum')
+            scan_k_val=request.POST.get('scan_k_val')
+            week_val=request.POST.get('week_val')
+            print(scan_k_val+' '+week_val)
+
+            record=DF_table.objects.get(id=record_id,PrintNum=printnum)
+            record.Scan_K_val=scan_k_val
+            record.Week_val=week_val
+            record.staticcode='CHECKED'
+            record.CheckBy=request.user.username
+            record.CheckTime=datetime.now()
+            record.save()
+            gw_list=DF_table.objects.filter(staticcode='POST')
+            data=serializers.serialize('json',gw_list)
+            # 不是设置工务系数,就是发还操作
+        else:
+            record_id=request.POST.get('record_id')
+            printnum=request.POST.get('printnum')
+            record=DF_table.objects.get(id=record_id,PrintNum=printnum)
+            record.staticcode='POST'
+            record.save()
+            gw_list=DF_table.objects.filter(staticcode='CHECKED')
+            data=serializers.serialize('json',gw_list)
+        return JsonResponse(data,safe=False)
