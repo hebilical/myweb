@@ -244,54 +244,81 @@ class DF_table(models.Model): #电分表
         )
 
 #
-# class OUT_table(models.Model):#输出表
-#     MACHINE_CHIOCES=(
-#         (1,'1号机(Lotem800)'),
-#         (2,'2号机(Magnus800)'),
-#     )
-#     OUT_WORKTYPE_CHOICES=(
-#         ('CTP_PB','CTP拼版'),
-#         ('CTP_CLZ','CTP出蓝纸'),
-#         ('PS_PB','PS拼版'),
-#         ('PS_CLZ','PS出蓝纸'),
-#         ('CTP_CB','CTP出版'),
-#         ('CTP_BB','CTP补版'),
-#         ('CTP_CSB','CTP测试版'),
-#     )
-#     WORKTIMETYPE_CHOICES=(
-#         ('A','白班'),
-#         ('B','夜班'),
-#     )
-#
-#     STATIC_CHOICES=(
-#         ('DRAFT','初稿'),
-#         ('POST','已过帐'),
-#         ('CHECKED','已审核'),
-#         ('DELETED','已删除'),
-#     )
-#     Machine=models.CharField(max_length=20,choices=MACHINE_CHIOCES)
-#     PrintNum=models.CharField(max_length=20,null=False)
-#     PrintName=models.CharField(max_length=200,null=False)
-#     SubCode=models.CharField(max_length=10,default='A')
-#     WorkType=models.CharField(max_length=20,choices=OUT_WORKTYPE_CHOICES)
-#     WorkData=models.DateField(null=True)
-#     WorkTimeType=models.CharField(max_length=10,choices=WORKTIMETYPE_CHOICES)
-#     FinishQty=models.IntegerField(default=0)
-#     LeaderCode=models.CharField(max_length=20)
-#     LeaderName=models.CharField(max_length=50)
-#     WorkStartTime=models.DateTimeField(auto_now=False,null=True)
-#     WorkEndTime=models.DateTimeField(auto_now=False,null=True)
-#     createtime=models.DateTimeField(auto_now=True)
-#     createBy=models.CharField(max_length=20,null=True)
-#     updatetime=models.DateTimeField(auto_now=False,null=True)
-#     updateBy=models.CharField(max_length=20,null=True)
-#     posttime=models.DateTimeField(auto_now=False,null=True)
-#     postBy=models.CharField(max_length=20,null=True)
-#     CheckTime=models.DateTimeField(auto_now=False,null=True)
-#     CheckBy=models.CharField(max_length=20,null=True)
-#     staticcode=models.CharField(max_length=20,default='DRAFT',choices=STATIC_CHOICES)
-#     remark=models.TextField(max_length=200)
-#
+class OUT_table(models.Model):#输出表
+    MACHINE_CHIOCES=(
+        ('1','1号机(Lotem800)'),
+        ('2','2号机(Magnus800)'),
+        ('3','3号机(Magnus800)'),
+    )
+    OUT_WORKTYPE_CHOICES=(
+        ('CTP_PB','CTP拼版'),
+        ('CTP_CLZ','CTP出蓝纸'),
+        ('PS_PB','PS拼版'),
+        ('PS_CLZ','PS出蓝纸'),
+        ('CTP_CB','CTP出版'),
+        ('CTP_BB','CTP补版'),
+        ('CTP_CSB','CTP测试版'),
+    )
+    PS_TYPE=(
+        ('IM500668','CTP华光(1030X800)'),
+        ('IM500536','CTP华光(1030X790)'),
+        ('IM501521','CTP版富士(1030X800)'),
+        ('IM501520','CTP版富士(1030X790)'),
+        ('IM501524','CTP版富士(968X584)'),
+        ('IM503335','CTP版柯达免冲洗(1030X790)'),
+        ('IM500035','CTP版柯达(968X604)'),
+        ('IM500746','PS版河南光华(1030X800)'),
+        ('IM500041','PS版河南光华(1030X790)'),
+        ('IM500990','PS版河南光华(968X604)'),
+        ('IM500989','PS版河南光华(968X584)'),
+    )
+    WORKTIMETYPE_CHOICES=(
+        ('A','白班'),
+        ('B','夜班'),
+    )
+
+    STATIC_CHOICES=(
+        ('DRAFT','初稿'),
+        ('POST','已过帐'),
+        ('CHECKED','已审核'),
+        ('DELETED','已删除'),
+    )
+    Machine=models.CharField(max_length=20,choices=MACHINE_CHIOCES)
+    PrintNum=models.CharField(max_length=20,null=False)
+    PrintName=models.CharField(max_length=200,null=False)
+    SubCode=models.CharField(max_length=10,default='A')
+    WorkType=models.CharField(max_length=20,choices=OUT_WORKTYPE_CHOICES)
+    WorkData=models.DateField(null=True)
+    WorkTimeType=models.CharField(max_length=10,choices=WORKTIMETYPE_CHOICES)
+    PS_Type=models.CharField(max_length=20,choices=PS_TYPE)
+    FinishQty=models.IntegerField(default=0)
+    LeaderCode=models.CharField(max_length=20)
+    LeaderName=models.CharField(max_length=50)
+    WorkStartTime=models.DateTimeField(auto_now=False,null=True)
+    WorkEndTime=models.DateTimeField(auto_now=False,null=True)
+    createtime=models.DateTimeField(auto_now=True)
+    createBy=models.CharField(max_length=20,null=True)
+    updatetime=models.DateTimeField(auto_now=False,null=True)
+    updateBy=models.CharField(max_length=20,null=True)
+    posttime=models.DateTimeField(auto_now=False,null=True)
+    postBy=models.CharField(max_length=20,null=True)
+    CheckTime=models.DateTimeField(auto_now=False,null=True)
+    CheckBy=models.CharField(max_length=20,null=True)
+    staticcode=models.CharField(max_length=20,default='DRAFT',choices=STATIC_CHOICES)
+    remark=models.CharField(max_length=200)
+    def __str__(self):
+        return (self.PrintNum+'   '+self.PrintName)
+    class Meta(object):
+        permissions=(
+            ('out_draft_post','输出初稿到过帐'),
+            ('out_post_checked','输出表已过帐记录审批'),
+            ('out_post_draft','输出表已过帐发还到初稿'),
+            ('out_checked_draft','输出表已批核发还到初稿'),
+            ('out_delete','输出表初稿删除'),
+            ('out_post_delete','输出表已过帐删除'),
+            ('out_checked_delete','输出表已批核删除'),
+            ('out_delete_draft','输出表已经删除到初稿'),
+        )
 #
 class ZJ_table(models.Model):
     ZJ_WORKTYPE_CHOICES=(

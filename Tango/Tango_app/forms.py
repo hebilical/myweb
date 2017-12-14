@@ -1,6 +1,6 @@
 
 from django.forms import ModelForm,HiddenInput
-from Tango_app.models import GW_pre_table,PRO_table,DF_table,ZJ_table
+from Tango_app.models import GW_pre_table,PRO_table,DF_table,ZJ_table,OUT_table
 
 class GW_forms(ModelForm):
     class Meta(object):
@@ -168,3 +168,51 @@ class ZJ_forms(ModelForm):
         self.fields['postBy'].required=False
         self.fields['CheckBy'].required=False
         self.fields['remark'].required=False
+
+
+
+
+class OUT_forms(ModelForm):
+    class Meta(object):
+
+        """docstring for Meta."""
+
+        model=OUT_table
+        fields=['PrintNum',
+                'PrintName',
+                'WorkTimeType',
+                'WorkType',
+                'PS_Type',
+                'WorkData',
+                'Machine',
+                'FinishQty',
+
+                # 'K_val',
+                'createBy',
+                'postBy',
+                'CheckBy',
+                'remark']
+        labels={'PrintNum':'印号',
+                'PrintName':'印件名',
+                'WorkTimeType':'班次',
+                'Machine':'机器',
+                'WorkType':'工作内容',
+                'WorkData':'工作日期',
+                'PS_Type':'版型',
+                'FinishQty':'完成数量',
+                # 'K_val':'难度系数',
+                'remark':'备注'
+                }
+        widgets={
+                'createBy': HiddenInput(),
+                'postBy':HiddenInput(),
+                'CheckBy':HiddenInput(),
+                # 'K_val':HiddenInput(),
+        }
+    def __init__(self,*args,**kwargs):
+        super(OUT_forms,self).__init__(*args,**kwargs)
+        self.fields['createBy'].required=False
+        self.fields['postBy'].required=False
+        self.fields['CheckBy'].required=False
+        self.fields['remark'].required=False
+        self.fields['PS_Type'].required=False
