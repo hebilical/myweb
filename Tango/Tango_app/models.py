@@ -407,6 +407,10 @@ class Page_loged(models.Model):
     ('OUT','领出'),
     ('USED','使用')
     )
+    WORKTIMETYPE_CHOICES=(
+        ('A','白班'),
+        ('B','夜班'),
+    )
     STATIC_CHOICES=(
         ('DRAFT','初稿'),
         ('POST','已过帐'),
@@ -416,8 +420,14 @@ class Page_loged(models.Model):
     PageType=models.CharField(max_length=20,choices=PS_TYPE_CHOICES)
     UseType=models.CharField(max_length=20,choices=USE_TYPE_CHOICES)
     Data=models.DateField(null=True)
+    WorkTimeType=models.CharField(max_length=20,default='A',choices=WORKTIMETYPE_CHOICES)
     Handler=models.CharField(max_length=20)
+    Qty=models.IntegerField(default=0)
     CreateTime=models.DateTimeField(auto_now_add=True)
     CreateBy=models.CharField(max_length=20)
-    StaticCode=models.CharField(max_length=20,choices=STATIC_CHOICES)
+    StaticCode=models.CharField(max_length=20,choices=STATIC_CHOICES,default='CHECKED')
     Remark=models.CharField(max_length=200)
+    DeleteBy=models.CharField(max_length=20,null=True )
+    DeleteTime=models.DateTimeField(null=True )
+    def __str__(self):
+        return (self.CreateBy+'   '+str(self.Data)+' '+str(self.Qty))

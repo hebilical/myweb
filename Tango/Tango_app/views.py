@@ -9,8 +9,8 @@ from django.contrib.auth.models import User
 # from Tango_app.forms import GW_forms
 from django.http import HttpResponse,Http404,HttpResponseRedirect,JsonResponse
 from django.views.generic.base import View
-from Tango_app.models import Article ,Category,GW_pre_table,PRO_table,DF_table,ZJ_table,OUT_table,Longined_user
-from Tango_app.forms import GW_forms , PRO_forms, DF_forms,ZJ_forms,OUT_forms
+from Tango_app.models import Article ,Category,GW_pre_table,PRO_table,DF_table,ZJ_table,OUT_table,Longined_user,Page_loged
+from Tango_app.forms import GW_forms , PRO_forms, DF_forms,ZJ_forms,OUT_forms,PageLogForms
 from django.contrib.sessions.models import Session
 from guardian.shortcuts import assign_perm
 from django.core import serializers
@@ -815,4 +815,78 @@ class OUT_MdfViewAjax(View):
             record.save()
             gw_list=OUT_table.objects.filter(staticcode='CHECKED')
             data=serializers.serialize('json',gw_list)
+        return JsonResponse(data,safe=False)
+
+
+@method_decorator([login_required,csrf_protect],name='dispatch')
+class PageLogView(View):
+    def get(self,request):
+        info_dict={'username':request.user.username,'first_name':request.user.first_name}
+        template_name='Tango_app/pagelog.html'
+        page_form=PageLogForms()
+        info_dict['page_form']=page_form
+        return render(request,template_name,info_dict)
+
+
+
+
+
+
+    def post(self,request):
+        template_name='Tango_app/pagelog.html'
+        info_dict={'username':request.user.username,'first_name':request.user.first_name}
+        page_form=PageLogForms()
+        if request.user.is_authenticated():
+            form=PageLogForms(request.POST)
+            if form.is_valid():
+                record=form.save(commit=False)
+                record.CreateBy=request.user.first_name
+                record.save()
+        else:
+            return HttpResponseRedirect('/Tango_app/login')
+        info_dict['page_form']=page_form
+        return render(request,template_name,info_dict)
+
+
+
+@method_decorator([login_required,csrf_protect],name='dispatch')
+class PageLog_AjaxView(View):
+    def get(self,request):
+        if request.is_ajax:
+            static_code=request.GET.get('static_code')
+            print(static_code)
+            if static_code=='DRAFT':
+                prd_list=Page_loged.objects.all()
+
+            else:
+                prd_list=Page_loged.objects.filter(StaticCode='DELETED')
+        else:
+            data=[]
+        data=serializers.serialize('json',prd_list)
+        return JsonResponse(data,safe=False)
+
+    def post(self,request):
+        if request.is_ajax:
+            # print(request.POST.get('prd_id')+request.POST.get('prd_printnum'))
+            static_code=request.POST.get('static_code')
+
+            record=Page_loged.objects.get(pk=int(request.POST.get('record_id')))
+            if static_code=='DELETED':
+                record.StaticCode=static_code
+                record.DeleteBy=request.user.first_name
+
+                record.DeleteTime=datetime.now()
+                record.save()
+                prd_list=Page_loged.objects.all()
+
+            else:
+
+                # record.WorkStartTime=request.POST.get('start_time')
+                # record.WorkEndTime=request.POST.get('end_time')
+                # record.staticcode=static_code
+                # record.postBy=request.user.first_name
+                # record.posttime=datetime.now()
+                # record.save()
+                prd_list=Page_loged.objects.all()
+        data=serializers.serialize('json',prd_list)
         return JsonResponse(data,safe=False)

@@ -1,6 +1,6 @@
 
 from django.forms import ModelForm,HiddenInput
-from Tango_app.models import GW_pre_table,PRO_table,DF_table,ZJ_table,OUT_table
+from Tango_app.models import GW_pre_table,PRO_table,DF_table,ZJ_table,OUT_table,Page_loged
 
 class GW_forms(ModelForm):
     class Meta(object):
@@ -218,3 +218,24 @@ class OUT_forms(ModelForm):
         self.fields['CheckBy'].required=False
         self.fields['remark'].required=False
         self.fields['PS_Type'].required=False
+class PageLogForms(ModelForm):
+    class Meta(object):
+        model=Page_loged
+        fields=[
+        'PageType',
+        'UseType',
+        'Data',
+        'Qty',
+        'WorkTimeType',
+        'Remark',
+        ]
+
+        labels={'PageType':'版型',
+        'UseType':'用途',
+        'Data':'日期',
+        'Qty':'数量(张)',
+        'WorkTimeType':'班次',
+        'Remark':'备注',}
+    def __init__(self,*args,**kwargs):
+        super(PageLogForms,self).__init__(*args,**kwargs)
+        self.fields['Remark'].required=False
