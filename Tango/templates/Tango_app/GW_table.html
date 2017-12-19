@@ -5,7 +5,7 @@
     <link rel="stylesheet" href='{% static "bootstrap-3.3.7-dist/css/bootstrap.css" %}'>
     <link rel="stylesheet" href='{% static "bootstrap-table/dist/bootstrap-table.css" %}'>
     <link rel="stylesheet" href='{% static "bootstrap3-editable/css/bootstrap-editable.css" %}'>
-
+    <link rel="stylesheet" href='{% static "bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" %}'>
     <!-- <link rel="stylesheet" href="./css/gw.css"> -->
     <script type="text/javascript" src='{% static "JS/jquery-3.2.1.js" %}'>
 
@@ -17,7 +17,13 @@
 
     </script>
     <!-- 中文支持 -->
+    <script type="text/javascript"  src='{% static "bootstrap-datetimepicker/js/bootstrap-datetimepicker.js" %}'>
 
+    </script>
+    <!-- 中文支持 -->
+    <script type="text/javascript"  src='{% static "bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" %}'>
+
+    </script>
 
     <script type="text/javascript" src='{% static "bootstrap-table/dist/locale/bootstrap-table-zh-CN.js" %}'>
   // 支持表格导出
@@ -76,7 +82,7 @@
     <button type="button" id='get_checked' class='get_record' name="button">查看已批核</button>
     <button type="button" id='get_del' class='get_record' name="button">查看已删除</button>
       <table id='gw_table' data-pagination="true" data-search="true" data-toggle="table">
-        <tr >
+        <!-- <tr >
           <th >ID</th>
           <th >印号</th>
           <th>印件名陈</th>
@@ -112,7 +118,7 @@
             </tr>
 
 
-          {% endfor  %}
+          {% endfor  %} -->
 
       </table>
 

@@ -1,3 +1,4 @@
+import uuid
 from django.shortcuts import render,render_to_response
 from datetime import datetime
 from django.contrib.auth import  authenticate,login,logout
@@ -8,8 +9,9 @@ from django.contrib.auth.models import User
 # from Tango_app.forms import GW_forms
 from django.http import HttpResponse,Http404,HttpResponseRedirect,JsonResponse
 from django.views.generic.base import View
-from Tango_app.models import Article ,Category,GW_pre_table,PRO_table,DF_table,ZJ_table,OUT_table
+from Tango_app.models import Article ,Category,GW_pre_table,PRO_table,DF_table,ZJ_table,OUT_table,Longined_user
 from Tango_app.forms import GW_forms , PRO_forms, DF_forms,ZJ_forms,OUT_forms
+from django.contrib.sessions.models import Session
 from guardian.shortcuts import assign_perm
 from django.core import serializers
 # Create your views here.
@@ -17,8 +19,10 @@ from django.core import serializers
 class IndexView(View):
 
     def get(self,request):
+
         info_dict={'username':request.user.username,'first_name':request.user.first_name}
         template_name='Tango_app/index.html'
+        print(request.COOKIES.get('sessionid'))
         return render(request,template_name,info_dict)
 
 
@@ -56,24 +60,31 @@ class LoginView(View):
     def get(self,request):
 
         template_name='Tango_app/login.html'
-        # if request.user.is_authenticated():
-        #     logout(request)
+        if request.user.is_authenticated():
+            # logout(request)
+            Longined_user.objects.filter(UserSession=request.COOKIES.get('sessionid')).delete()
         return render(request,template_name)
 
     def post(self,request):
         user_name=request.POST.get('empcode')
         user_pswd=request.POST.get('userpassword')
-        user=authenticate(username=user_name,password=user_pswd)
+        l_user=authenticate(username=user_name,password=user_pswd)
 
-        login(request,user)
-        print('longin '+user.username)
+        # Session.objects.all().delete()
+        # print(user.first_name)
 
-        if user:
+        if l_user:
+            login(request,l_user)
+            cookies_str=uuid.uuid4()
+            respone=HttpResponseRedirect('/Tango_app/')
+            respone.set_cookie('user_session',cookies_str)
+
+            logined=Longined_user(user=l_user,UserSession=cookies_str)
+            logined.save()
             if request.user.is_authenticated():
-                return HttpResponseRedirect('/Tango_app/')
+                # print (request.session['seesionid'])
+                return respone
             else:
-
-
                 return HttpResponseRedirect('/Tango_app/')
         else:
             return HttpResponse ('无此用户!请确认您输入的用户名和密码是否无误.')
@@ -84,7 +95,11 @@ class GWView(View):
 
     def get(self,request):
         template_name='Tango_app/GW_table.html'
-        gw_list=GW_pre_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT')
+
+        user=Longined_user.objects.get(UserSession=request.COOKIES.get('user_session')).user
+        # print(request.COOKIES.get('user_session'))
+
+        gw_list=GW_pre_table.objects.filter(createBy=user.first_name,staticcode='DRAFT')
         form_list=[]
         gw_form=GW_forms()
         for item in gw_list:
@@ -103,8 +118,9 @@ class GWView(View):
     def post(self,request):
         template_name='Tango_app/GW_table.html'
         info_dict={'username':request.user.username,'first_name':request.user.first_name}
-        form_list=[]
+        # form_list=[]
         gw_form=GW_forms()
+
         if request.user.is_authenticated():
             form=GW_forms(request.POST)
             if form.is_valid():
@@ -112,11 +128,11 @@ class GWView(View):
                 record.createBy=request.user.first_name
                 record.save()
                 assign_perm('Tango_app.gw_draft_post',request.user,record)
-            gw_list=GW_pre_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT')
-            for item in gw_list:
-                form_list.append(item)
-            info_dict['gw_form']=gw_form
-            info_dict['form_list']=form_list
+            # gw_list=GW_pre_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT')
+            # for item in gw_list:
+            #     form_list.append(item)
+            # info_dict['gw_form']=gw_form
+            # info_dict['form_list']=form_list
             # return JsonResponse(data,safe=False)
         else:
             return HttpResponseRedirect('/Tango_app/login')
@@ -127,22 +143,26 @@ class GWView(View):
 @method_decorator([login_required,csrf_protect],name='dispatch')
 class GW_AjaxView(View):
     def get(self,request):
-        print(request.GET.get('staict_code'))
-        gw_list=GW_pre_table.objects.filter(createBy=request.user.first_name,staticcode=request.GET.get('staict_code'))
+        print(request.GET.get('static_code'))
+
+        gw_list=GW_pre_table.objects.filter(createBy=request.user.first_name,staticcode=request.GET.get('static_code'))
         data=serializers.serialize('json',gw_list)
         return JsonResponse(data,safe=False)
 
 
 
     def post(self,request):
-        staict_code=request.POST.get('staict_code')
+        staict_code=request.POST.get('static_code')
+
         record=GW_pre_table.objects.filter(pk=int(request.POST.get('gw_id')),PrintNum=request.POST.get('gw_printnum'))
         if request.POST.get('staict_code')=='POST':
             record.update(staticcode=staict_code,postBy=request.user.username,posttime=datetime.now())
         else:
             record.update(staticcode=staict_code,updateBy=request.user.username,updatetime=datetime.now())
 
-        pass
+        gw_list=GW_pre_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT')
+        data=serializers.serialize('json',gw_list)
+        return JsonResponse(data,safe=False)
 
 @method_decorator([login_required,csrf_protect],name='dispatch')
 class GW_Mdf_View(View):
@@ -229,7 +249,7 @@ class PRD_View(View):
         # form_list=[]
 
         prd_form=PRO_forms()
-
+        user=Longined_user.objects.get(UserSession=request.COOKIES.get('user_session')).user
         if request.user.is_authenticated():
             form=PRO_forms(request.POST)
             if form.is_valid():
@@ -237,7 +257,7 @@ class PRD_View(View):
                 record.createBy=request.user.first_name
                 record.save()
                 assign_perm('Tango_app.prd_draft_post',request.user,record)
-            prd_list=PRO_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT')
+            prd_list=PRO_table.objects.filter(createBy=user.first_name,staticcode='DRAFT')
             # for item in gw_list:
             #     form_list.append(item)
             info_dict['prd_form']=prd_form
@@ -253,6 +273,7 @@ class PRD_View(View):
         info_dict={'username':request.user.username,'first_name':request.user.first_name}
 
         prd_form=PRO_forms()
+        user=Longined_user.objects.get(UserSession=request.COOKIES.get('user_session')).user
         if request.user.is_authenticated():
             form=PRO_forms(request.POST)
             if form.is_valid():
@@ -260,7 +281,7 @@ class PRD_View(View):
                 record.createBy=request.user.first_name
                 record.save()
                 assign_perm('Tango_app.prd_draft_post',request.user,record)
-            gw_list=PRO_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT')
+            gw_list=PRO_table.objects.filter(createBy=user.first_name,staticcode='DRAFT')
 
             info_dict['prd_form']=prd_form
 
@@ -272,6 +293,7 @@ class PRD_View(View):
 @method_decorator([login_required,csrf_protect],name='dispatch')
 class PRD_ViewAjax(View):
     def get(self,request):
+
         if request.is_ajax:
             static_code=request.GET.get('staict_code')
             prd_list=PRO_table.objects.filter(staticcode=static_code,createBy=request.user.first_name)
@@ -362,7 +384,8 @@ class PRD_MdfViewAjax(View):
 @method_decorator([login_required,csrf_protect],name='dispatch')
 class DF_View(View):   #浏览器正常访问电分页面
     def get(self,request):
-        info_dict={'username':request.user.username,'first_name':request.user.first_name}
+        user=Longined_user.objects.get(UserSession=request.COOKIES.get('user_session')).user
+        info_dict={'username':user.username,'first_name':user.first_name}
         template_name='Tango_app/df.html'
 
 
@@ -384,7 +407,8 @@ class DF_View(View):   #浏览器正常访问电分页面
 
     def post(self,request):
         template_name='Tango_app/df.html'
-        info_dict={'username':request.user.username,'first_name':request.user.first_name}
+        user=Longined_user.objects.get(UserSession=request.COOKIES.get('user_session')).user
+        info_dict={'username':user.username,'first_name':user.first_name}
 
         df_form=DF_forms()
         if request.user.is_authenticated():
@@ -395,7 +419,7 @@ class DF_View(View):   #浏览器正常访问电分页面
             if form.is_valid():
 
                 record=form.save(commit=False)
-                record.createBy=request.user.first_name
+                record.createBy=user.first_name
                 record.save()
                 print('saved')
                 assign_perm('Tango_app.df_draft_post',request.user,record)
@@ -732,4 +756,63 @@ class OUT_AjaxView(View):
                 record.save()
                 prd_list=OUT_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT')
         data=serializers.serialize('json',prd_list)
+        return JsonResponse(data,safe=False)
+
+
+
+@method_decorator([login_required,csrf_protect],name='dispatch')
+class OUT_MdfView(View):
+    def get(self,request):
+        template_name='Tango_app/output_mdf.html'
+        info_dict={'username':request.user.username,'first_name':request.user.first_name}
+        return render(request,template_name,info_dict)
+
+
+
+    def post(self,request):
+
+        pass
+
+
+
+
+@method_decorator([login_required,csrf_protect],name='dispatch')
+class OUT_MdfViewAjax(View):
+    def get(self,request):
+        if request.is_ajax:
+            staict_code=request.GET.get('static_code')
+            print(staict_code)
+            gw_list=OUT_table.objects.filter(staticcode=staict_code)
+            data=serializers.serialize('json',gw_list)
+            return JsonResponse(data,safe=False)
+        else:
+            pass
+
+    def post(self,request):
+            #是否是设置系数
+        if request.is_ajax and request.POST.get('k_set')=='true':
+            # print(request.POST.get('k_set'))
+            record_id=request.POST.get('record_id')
+            printnum=request.POST.get('printnum')
+            # k_val=request.POST.get('k_val')
+
+            # print(k_val)
+
+            record=OUT_table.objects.get(id=record_id,PrintNum=printnum)
+            # record.K_val=k_val
+            record.staticcode='CHECKED'
+            record.CheckBy=request.user.username
+            record.CheckTime=datetime.now()
+            record.save()
+            gw_list=OUT_table.objects.filter(staticcode='POST')
+            data=serializers.serialize('json',gw_list)
+            # 不是设置工务系数,就是发还操作
+        else:
+            record_id=request.POST.get('record_id')
+            printnum=request.POST.get('printnum')
+            record=OUT_table.objects.get(id=record_id,PrintNum=printnum)
+            record.staticcode='POST'
+            record.save()
+            gw_list=OUT_table.objects.filter(staticcode='CHECKED')
+            data=serializers.serialize('json',gw_list)
         return JsonResponse(data,safe=False)

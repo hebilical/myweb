@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 import datetime
 from django.utils.timezone import now
 
@@ -19,6 +20,11 @@ class Category(models.Model):
 
 
         )
+class Longined_user(models.Model):
+    user=models.ForeignKey(User)
+    UserSession=models.CharField(max_length=50,null=False)
+    def __str__(self):
+        return (user.first_name+ ' ' +user_session)
 
 class Article_Author(models.Model):
     name=models.CharField(max_length=128,null=False);
@@ -65,6 +71,10 @@ class GW_pre_table(models.Model):  #公务表
         ('COPYDOT','COPYDOT'),
         ('KP','刻盘'),
     )
+    WORKTIMETYPE_CHOICES=(
+        ('A','白班'),
+        ('B','夜班'),
+    )
 
     STATIC_CHOICES=(
         ('DRAFT','初稿'),
@@ -86,6 +96,7 @@ class GW_pre_table(models.Model):  #公务表
     SubCode=models.CharField(max_length=10,default='A')
     WorkType=models.CharField(max_length=50,choices=WORKTYPE_CHOICES,)
     WorkData=models.DateField(null=False,default=datetime.date.today())
+    WorkTimeType=models.CharField(max_length=10,default='A',choices=WORKTIMETYPE_CHOICES)
     FinishQty=models.IntegerField(default=0)
     K_val=models.FloatField(default=0.0)
     createtime=models.DateTimeField(auto_now_add=True)
@@ -378,3 +389,35 @@ class ZJ_table(models.Model):
             ('zj_checked_delete','制作已批核删除'),
             ('zj_delete_draft','制作已经删除到初稿'),
         )
+class Page_loged(models.Model):
+    PS_TYPE_CHOICES=(
+        ('IM500668','CTP华光(1030X800)'),
+        ('IM500536','CTP华光(1030X790)'),
+        ('IM501521','CTP版富士(1030X800)'),
+        ('IM501520','CTP版富士(1030X790)'),
+        ('IM501524','CTP版富士(968X584)'),
+        ('IM503335','CTP版柯达免冲洗(1030X790)'),
+        ('IM500035','CTP版柯达(968X604)'),
+        ('IM500746','PS版河南光华(1030X800)'),
+        ('IM500041','PS版河南光华(1030X790)'),
+        ('IM500990','PS版河南光华(968X604)'),
+        ('IM500989','PS版河南光华(968X584)'),
+    )
+    USE_TYPE_CHOICES=(
+    ('OUT','领出'),
+    ('USED','使用')
+    )
+    STATIC_CHOICES=(
+        ('DRAFT','初稿'),
+        ('POST','已过帐'),
+        ('CHECKED','已审核'),
+        ('DELETED','已删除'),
+    )
+    PageType=models.CharField(max_length=20,choices=PS_TYPE_CHOICES)
+    UseType=models.CharField(max_length=20,choices=USE_TYPE_CHOICES)
+    Data=models.DateField(null=True)
+    Handler=models.CharField(max_length=20)
+    CreateTime=models.DateTimeField(auto_now_add=True)
+    CreateBy=models.CharField(max_length=20)
+    StaticCode=models.CharField(max_length=20,choices=STATIC_CHOICES)
+    Remark=models.CharField(max_length=200)

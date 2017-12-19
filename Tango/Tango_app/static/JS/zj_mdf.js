@@ -404,6 +404,7 @@ $(document).ready(function () {
               {
                 field:'operation_to_post',
                 title:'操作',
+                visible:false,
                 width:100,
                 formatter:function(value,row,index){
                                     var strHtml ='<button class="k_checked_btn">'+'发还'+'</button>';
@@ -416,49 +417,53 @@ $(document).ready(function () {
 
               ],
               onClickCell:function (field,value,row,$element) {
+                if (field==='operation_to_post'){
+                  $.ajax({
+                    url: '/Tango_app/zj/modify_ajax/',
+                    type: 'POST',
 
-                $.ajax({
-                  url: '/Tango_app/zj/modify_ajax/',
-                  type: 'POST',
+                    data: {record_id: row.record_id,printnum:row.printnum,k_set:false},
 
-                  data: {record_id: row.record_id,printnum:row.printnum,k_set:false},
-
-                  success:function (data) {
-                    // alert(data);
-                    var json=$.parseJSON(data);
-                    var jsondata=[];
-                    $.each(json,function(index, el) {
+                    success:function (data) {
+                      // alert(data);
+                      var json=$.parseJSON(data);
+                      var jsondata=[];
+                      $.each(json,function(index, el) {
 
 
-          // 创建和json对象存放单条记录
-                    var unit_json={
-                          record_id:el.pk,
-                          printnum:el.fields.PrintNum,
-                          printname:el.fields.PrintName,
-                          date_type:work_time[el.fields.WorkTimeType],
-                          workdate:el.fields.WorkData,
-                          worktype:work_type[el.fields.WorkType],
-                          work_start_time:el.fields.WorkStartTime,
-                          work_end_time:el.fields.WorkEndTime,
-                          FinishQty:el.fields.FinishQty,
-                          K_val:el.fields.K_val,
 
-                          remark:el.fields.remark,
-                          static_code:staict_type[el.fields.staticcode],
-                          createBy:el.fields.createBy,
-                          createtime:el.fields.createtime,
-                          postby:el.fields.postBy,
-                          posttime:el.fields.posttime,
-                          checkBy:el.fields.CheckBy,
-                          checkTime:el.fields.CheckTime
-                          };
-                      jsondata.push(unit_json);
+                      var unit_json={
+                            record_id:el.pk,
+                            printnum:el.fields.PrintNum,
+                            printname:el.fields.PrintName,
+                            date_type:work_time[el.fields.WorkTimeType],
+                            workdate:el.fields.WorkData,
+                            worktype:work_type[el.fields.WorkType],
+                            work_start_time:el.fields.WorkStartTime,
+                            work_end_time:el.fields.WorkEndTime,
+                            FinishQty:el.fields.FinishQty,
+                            K_val:el.fields.K_val,
 
-                    });
-                    $('#zj_table_k').bootstrapTable('load',jsondata);
+                            remark:el.fields.remark,
+                            static_code:staict_type[el.fields.staticcode],
+                            createBy:el.fields.createBy,
+                            createtime:el.fields.createtime,
+                            postby:el.fields.postBy,
+                            posttime:el.fields.posttime,
+                            checkBy:el.fields.CheckBy,
+                            checkTime:el.fields.CheckTime
+                            };
+                        jsondata.push(unit_json);
 
-                  }
-                });
+                      });
+                      $('#zj_table_k').bootstrapTable('load',jsondata);
+
+                    }
+                  });
+
+
+
+                }
 
 
 

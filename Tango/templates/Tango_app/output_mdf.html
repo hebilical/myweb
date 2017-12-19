@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {% load static %}
+    <link rel="stylesheet" href='{% static "bootstrap-3.3.7-dist/css/bootstrap.css" %}'>
+    <link rel="stylesheet" href='{% static "bootstrap-table/dist/bootstrap-table.css" %}'>
+
+    <!-- <link rel="stylesheet" href="./css/gw.css"> -->
+    <script type="text/javascript" src='{% static "JS/jquery-3.2.1.js" %}'>
+
+    </script>
+    <script type="text/javascript" src='{% static "bootstrap-3.3.7-dist/js/bootstrap.js" %}'>
+
+    </script>
+    <script type="text/javascript"  src='{% static "bootstrap-table/dist/bootstrap-table.js" %}'>
+
+    </script>
+    <!-- 中文支持 -->
+
+    <script type="text/javascript" src='{% static "bootstrap-table/dist/locale/bootstrap-table-zh-CN.js" %}'>
+
+    </script>
+    <!-- 支持导出 -->
+    <script type="text/javascript" src='{% static "bootstrap-table/dist/extensions/export/bootstrap-table-export.min.js" %}'>
+
+    </script>
+    <script type="text/javascript" src='{% static "tableExport.jquery.plugin/tableExport.js" %}' >
+
+    </script>
+
+    <script type="text/javascript" src='{% static "tableExport.jquery.plugin/libs/js-xlsx/xlsx.core.min.js" %}'>
+
+    </script>
+<!--   支持行内编辑-->
+    <script type="text/javascript" src='{% static "bootstrap3-editable/js/bootstrap-editable.js" %}' >
+
+    </script>
+    <script type="text/javascript"  src='{% static "bootstrap-table/dist/extensions/editable/bootstrap-table-editable.js" %}'>
+
+    </script>
+
+    <script type="text/javascript" src='{% static "JS/Ajax.js" %}'>
+
+    </script>
+    <script type="text/javascript" src='{% static "JS/output_mdf.js" %}'>
+
+    </script>
+
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+      <h2>输出报表系数修改页</h2>
+      <a href="/Tango_app"><h4>返回主页</h4></a>
+    <div class="userInfo">
+      <label>当前用户:{{username}}</label>
+      <br>
+      <label>姓名:{{first_name}}</label>
+      <br>
+      <a href="/Tango_app/login">退出登录</a>
+    </div>
+<br>
+<br>
+<br>
+    <button type="button" class='static_btn' name="button" id='get_post'>已过帐</button>
+    <button type="button" class='static_btn' name="button" id='get_k_setted'>系数已定</button>
+    <button type="button" class='static_btn' name="button" id='get_del'>已删除</button>
+
+    <br>
+    <div class="container">
+
+    </div>
+
+
+    </div>
+<!-- <h4>系数已设置</h4> -->
+  <div class="df_table">
+    <table id="output_table_k" border="1">
+
+    </table>
+
+  </div>
+
+  </body>
+</html>

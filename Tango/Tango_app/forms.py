@@ -13,6 +13,7 @@ class GW_forms(ModelForm):
                 'sidetype',
                 'WorkType',
                 'WorkData',
+                'WorkTimeType',
                 'FinishQty',
                 'K_val',
                 'createBy',
@@ -24,6 +25,7 @@ class GW_forms(ModelForm):
                 'sidetype':'开本',
                 'WorkType':'工作内容',
                 'WorkData':'工作日期',
+                'WorkTimeType':'班次',
                 'FinishQty':'完成数量',
                 'K_val':'难度系数',
                 'remark':'备注'
