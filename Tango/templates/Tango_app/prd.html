@@ -6,6 +6,7 @@
     <link rel="stylesheet" href='{% static "bootstrap-table/dist/bootstrap-table.css" %}'>
     <link rel="stylesheet" href='{% static "bootstrap3-editable/css/bootstrap-editable.css" %}'>
     <link rel="stylesheet" href='{% static "bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" %}'>
+    <link rel="stylesheet" href='{% static "select2/dist/css/select2.min.css" %}'>
 
     <!-- <link rel="stylesheet" href="./css/gw.css"> -->
     <script type="text/javascript" src='{% static "JS/jquery-3.2.1.js" %}'>
@@ -17,7 +18,10 @@
     <script type="text/javascript"  src='{% static "bootstrap-table/dist/bootstrap-table.js" %}'>
 
     </script>
-    <script type="text/javascript" src='{% static "JS/momentjs.js" %}'>
+    <!-- <script type="text/javascript" src='{% static "JS/momentjs.js" %}'>
+
+    </script> -->
+    <script type="text/javascript" src='{% static "select2/dist/js/select2.min.js" %}'>
 
     </script>
     <!-- 中文支持 -->
@@ -76,14 +80,51 @@
       <a href="/Tango_app/login">退出登录</a>
     </div>
     <br>
-    <div class="prd_input_Part">
-      <form class="" action="" method="post">
-      {% csrf_token %}
-      {{prd_form}}
-      <br>
-      <button id='sub_btn' type="submit" name="">确认</button>
-    </form>
+    <div class="PRD_input_Part">
+
+    <label for="">印号</label>
+    <input type="text" name="printnum" id="printnum" style="width:80px">
+    <label for="">印件名</label>
+    <input type="text" name="printname" id='printname' value="">
+
+    <!-- <label for="">开本</label>
+     <select id='size' class="" name="size" style="width:60px">
+       <option value=1>4K</option>
+       <option value=2>8K</option>
+       <option value=3>16K</option>
+       <option value=4>32K</option>
+
+     </select> -->
+
+
+    <label for="">工作日期</label>
+    <input id='workdate' type="text" name="workdate"  value="" style="width:90px">
+    <label for="">班次</label >
+    <select id='worktimetype' class="" name="worktimetype" style="width:70px">
+      <option value="A">白班</option>
+      <option value="B">夜班</option>
+    </select>
+    <label for="" >请选择</label>
+    <select id='work_type'  class="work_type" name="selected_worktype"   style="width:300px">
+      <option value="SJ">收集</option>
+      <option value="ZZJC">制作检查</option>
+      <option value="XT">修图</option>
+      <option value="TD">褪底</option>
+      <option value="ZZ">制作</option>
+      <option value="FP">发排</option>
+      <option value="PDF_FP">PDF发排</option>
+      <option value="PDF_TWJ">PDF替文件</option>
+      <option value="PDF_GB">PDF改版</option>
+      <option value="CSMY">出数码样</option>
+      <option value="CLZ">出蓝纸</option>
+      <option value="KGP">刻光盘</option>
+    </select>
+
+    <label for="">备注</label>
+    <input id='remark' type="text" name="remark" value="">
+    <button id='submit_btn' type="button"  name="button">提交</button>
     </div>
+
     <div class="prd_show_part">
     <button type="button" id='get_draft' name="button">查看初稿</button>
     <button type="button" id='get_post' class='get_record' name="button">查看已过帐</button>

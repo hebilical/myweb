@@ -1,8 +1,22 @@
 $(document).ready(function() {
 
-$('#id_WorkData').on('focus', function(event) {
 
-  $(this).datetimepicker({
+
+
+
+
+
+
+
+
+  $('#work_type').select2({
+    placeholder:'请至少选择一个工序',
+    closeOnSelect:false,
+    multiple:true,
+    maximumSelectionLength:8
+  });
+
+  $('#workdate').datetimepicker({
     minView:'month',
     format:'yyyy-mm-dd',
     language:'zh-CN',
@@ -11,7 +25,9 @@ $('#id_WorkData').on('focus', function(event) {
     todayHightlight:true
 
   });
-});
+
+
+
 
 
   $('#get_draft').on('click', function(event) {
