@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>月记录查看与导出</title>
+  </head>
+  <body>
+    <div class="shoices">
+      <input class='shoices_radio' type="radio" name="set_type" value="get_gw">工务组
+      <input class='shoices_radio' type="radio" name="set_type" value="get_prd">制作组
+      <input class='shoices_radio' type="radio" name="set_type" value="get_df">电分组
+      <input class='shoices_radio' type="radio" name="set_type" value="get_zj">质检组
+      <input class='shoices_radio' type="radio" name="set_type" value="get_out">输出组
+    </div>
+    <div class="filter">
+      <label for="">开始时间</label>
+      <input type="text" name="start_time" value="">&nbsp;&nbsp;&nbsp;&nbsp;
+      <label for="">截止时间</label>
+      <input type="text" name="end_time" value="">
+    </div>
+  <button type="button" name="serche">查看</button>
+  <div class="resulft_show">
+    <table id='resulft_table'>
+
+    </table>
+
+  </div>
+  </body>
+</html>

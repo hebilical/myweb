@@ -6,6 +6,7 @@
     <link rel="stylesheet" href='{% static "bootstrap-table/dist/bootstrap-table.css" %}'>
     <link rel="stylesheet" href='{% static "bootstrap3-editable/css/bootstrap-editable.css" %}'>
     <link rel="stylesheet" href='{% static "bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" %}'>
+    <link rel="stylesheet" href='{% static "select2/dist/css/select2.min.css" %}'>
     <!-- <link rel="stylesheet" href="./css/gw.css"> -->
     <script type="text/javascript" src='{% static "JS/jquery-3.2.1.js" %}'>
 
@@ -14,6 +15,9 @@
 
     </script>
     <script type="text/javascript"  src='{% static "bootstrap-table/dist/bootstrap-table.js" %}'>
+
+    </script>
+    <script type="text/javascript"  src='{% static "select2/dist/js/select2.min.js" %}'>
 
     </script>
     <!-- 中文支持 -->
@@ -69,12 +73,51 @@
     </div>
     <br>
     <div class="GW_input_Part">
-      <form class="" action="" method="post">
+      <!-- <form class="" action="" method="post">
       {% csrf_token %}
       {{gw_form}}
       <br>
       <button id='sub_btn' type="submit" name="">确认</button>
-    </form>
+    </form> -->
+    <label for="">印号</label>
+    <input type="text" name="printnum" id="printnum" style="width:80px">
+    <label for="">印件名</label>
+    <input type="text" name="printname" id='printname' value="">
+
+    <label for="">开本</label>
+     <select id='size' class="" name="size" style="width:60px">
+       <option value=1>4K</option>
+       <option value=2>8K</option>
+       <option value=3>16K</option>
+       <option value=4>32K</option>
+
+     </select>
+
+
+    <label for="">工作日期</label>
+    <input id='workdate' type="text" name="workdate"  value="" style="width:90px">
+    <label for="">班次</label >
+    <select id='worktimetype' class="" name="worktimetype" style="width:70px">
+      <option value="A">白班</option>
+      <option value="B">夜班</option>
+    </select>
+    <label for="" >请选择</label>
+    <select id='work_type'  class="work_type" name="selected_worktype"   style="width:300px">
+      <option value="SMY">数码样</option>
+      <option value="LZ">蓝纸</option>
+      <option value="CTF">CTF</option>
+      <option value="CTP">CTP</option>
+      <option value="GB">改版</option>
+      <option value="SBL">算倍率</option>
+      <option value="COPYDOT">COPYDOT</option>
+      <option value="KP">刻盘</option>
+
+
+    </select>
+
+    <label for="">备注</label>
+    <input id='remark' type="text" name="remark" value="">
+    <button id='submit_btn' type="button"  name="button">提交</button>
     </div>
     <div class="GW_show_part">
     <button type="button" id='get_draft' name="button">查看初稿</button>

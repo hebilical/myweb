@@ -15,14 +15,56 @@
     </script>
   </head>
   <body>
-    <h1>华联印前报表</h1><br><div class="userInfo">
+    <nav class="navbar navbar-default" role="navigation">
+        <div class="navbar-header">
+          <ul class="nav navbar-nav">
+            <li>
+              <a href="#" data-toggle='dropdown'><h4>报表录入</h4><b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="/Tango_app/gw"><h4>工务日报表</h4></a></li>
+                <li><a href="/Tango_app/prd"><h4>制作日报表</h4></a></li>
+                <li><a href="/Tango_app/df"><h4>电分日报表</h4></a></li>
+                <li><a href="/Tango_app/zj"><h4>质检日报表</h4></a></li>
+                <li><a href="/Tango_app/out"><h4>输出日报表</h4></a></li>
+                <li><a href="/Tango_app/pagelog"><h4>板材领取表</h4></a></li>
+              </ul>
+
+            </li>
+
+
+            <li>
+
+              <a href="#" data-toggle='dropdown'><h4>系数确定</h4><b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="/Tango_app/gw/modify"><h4>工务日报系数修改</h4></a></li>
+                <li><a href="/Tango_app/prd/modify"><h4>制作日报系数修改</h4></a></li>
+                <li><a href="/Tango_app/df/modify"><h4>电分日报系数修改</h4></a></li>
+                <li><a href="/Tango_app/zj/modify"><h4>质检日报系数修改</h4></a></li>
+                <li><a href="/Tango_app/out/modify"><h4>输出日报确认</h4></a></li>
+              </ul>
+            </li>
+
+            <!-- <li><a href="#"><h4>报表录入</h4></a></li>
+            <li><a href="/Tango_app/gw"><h4>工务日报表</h4></a></li>
+            <li><a href="/Tango_app/prd"><h4>制作日报表</h4></a></li>
+            <li><a href="/Tango_app/df"><h4>电分日报表</h4></a></li>
+            <li><a href="/Tango_app/zj"><h4>质检日报表</h4></a></li>
+            <li><a href="/Tango_app/out"><h4>输出日报表</h4></a></li>
+            <li><a href="/Tango_app/pagelog"><h4>板材领取表</h4></a></li> -->
+
+          </ul>
+
+        </div>
+    </nav>
+
+    <div class="userInfo">
       <label>当前用户:{{username}}</label>
       <br>
       <label>姓名:{{first_name}}</label>
       <br>
       <a href="/Tango_app/login">退出登录</a>
     </div>
-    <div class="partone">
+    <!-- <div class="partone">
       <a href="/Tango_app/about"><h4>about</h4></a>
       <a href="/Tango_app/gw"><h4>工务日报表</h4></a>
       <a href="/Tango_app/gw/modify"><h4>工务记录系数修改</h4></a>
@@ -34,8 +76,8 @@
       <a href="/Tango_app/zj/modify"><h4>质检日报表系数修改</h4></a>
       <a href="/Tango_app/out"><h4>输出日报表</h4></a>
       <a href="/Tango_app/out/modify"><h4>输出日报表确认</h4></a>
-      <a href="/Tango_app/pagelog"><h4>板材领取</h4></a>
-    </div>
+      <a href="/Tango_app/pagelog"><h4>板材领取表</h4></a>
+    </div> -->
 
 
   </body>

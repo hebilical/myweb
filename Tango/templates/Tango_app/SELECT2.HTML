@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {% load static %}
+    <meta charset="utf-8">
+    <link rel="stylesheet" href='{% static "bootstrap-3.3.7-dist/css/bootstrap.css" %}'>
+    <link rel="stylesheet" href='{% static "select2/dist/css/select2.css" %}'>
+
+
+    <script type="text/javascript" src='{% static "JS/jquery-3.2.1.js" %}'>
+    </script>
+    <script type="text/javascript" src='{% static "bootstrap-3.3.7-dist/js/bootstrap.js" %}'>
+    </script>
+    <script type="text/javascript" src='{% static "select2/dist/js/select2.full.js" %}'>
+
+    </script>
+    <script type="text/javascript" src='{% static "JS/Ajax.js" %}'>
+
+    </script>
+    <script type="text/javascript" src='{% static "JS/select2_test.js" %}'>
+
+    </script>
+    <title>多选下拉框测试</title>
+  </head>
+  <body>
+    <!-- <form class="" action="" method="post"> -->
+      {% csrf_token %}
+      <label for="">印号</label>
+      <input type="text" name="printnum" id="printnum">
+      <label for="">印件名</label>
+      <input type="text" name="printname" id='printname' value="">
+      <label for="">开本</label>
+       <select id='size' class="" name="size" style="width:60px">
+         <option value=1>4K</option>
+         <option value=2>8K</option>
+         <option value=3>16K</option>
+         <option value=4>32K</option>
+
+       </select>
+
+      <label for="">工作日期</label>
+      <input type="text" name="workdate" id='workdate' value="">
+      <label for="">请选择</label>
+      <select id='work_type'  class="work_type" name="selected_worktype"   style="width:300px">
+        <option value="SMY">数码样</option>
+        <option value="LZ">蓝纸</option>
+        <option value="CTF">CTF</option>
+        <option value="CTP">CTP</option>
+      </select>
+      <button id='submit_btn' type="button"  name="button">提交</button>
+    <!-- </form> -->
+
+
+  </body>
+</html>

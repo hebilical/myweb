@@ -14,6 +14,7 @@ from Tango_app.forms import GW_forms , PRO_forms, DF_forms,ZJ_forms,OUT_forms,Pa
 from django.contrib.sessions.models import Session
 from guardian.shortcuts import assign_perm
 from django.core import serializers
+from Tango_app.record_maker import gw_maker
 # Create your views here.
 @method_decorator([login_required,csrf_protect],name='dispatch')
 class IndexView(View):
@@ -119,23 +120,40 @@ class GWView(View):
         template_name='Tango_app/GW_table.html'
         info_dict={'username':request.user.username,'first_name':request.user.first_name}
         # form_list=[]
-        gw_form=GW_forms()
+        # gw_form=GW_forms()
 
         if request.user.is_authenticated():
-            form=GW_forms(request.POST)
-            if form.is_valid():
-                record=form.save(commit=False)
-                record.createBy=request.user.first_name
-                record.save()
-                assign_perm('Tango_app.gw_draft_post',request.user,record)
-            # gw_list=GW_pre_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT')
-            # for item in gw_list:
-            #     form_list.append(item)
-            # info_dict['gw_form']=gw_form
-            # info_dict['form_list']=form_list
-            # return JsonResponse(data,safe=False)
+            # form=GW_forms(request.POST)
+            # if form.is_valid():
+            gw_recordInfo={}
+            if request.is_ajax:
+                gw_work_types=request.POST.get('work_types')
+                gw_recordInfo['gw_printnum']=request.POST.get('printnum')
+                gw_recordInfo['gw_printname']=request.POST.get('printname')
+                gw_recordInfo['pagesize']=request.POST.get('pagesize')
+                gw_recordInfo['gw_workdate']=request.POST.get('workdate')
+                gw_recordInfo['gw_workdatetype']=request.POST.get('worktimetype')
+                gw_recordInfo['gw_remark']=request.POST.get('remark')
+                gw_recordInfo['creator']=info_dict['first_name']
+                print(gw_recordInfo['creator']+'hh'+gw_recordInfo['gw_remark'])
+                if gw_maker(gw_work_types,gw_recordInfo):
+                    recoedlist=GW_pre_table.objects.filter(staticcode='DRAFT',createBy=gw_recordInfo['creator'])
+                    data=serializers.serialize('json',recoedlist)
+
+                    return JsonResponse(data,safe=False)
+                else:
+                    print('记录生成失败')
+                    return HttpResponse(request,'工务记录生成失败')
+                # record=form.save(commit=False)
+                # record.createBy=request.user.first_name
+                # record.save()
+                # assign_perm('Tango_app.gw_draft_post',request.user,record)
+
+
+
         else:
             return HttpResponseRedirect('/Tango_app/login')
+        info_dict['gw_form']=gw_form
         return render(request,template_name,info_dict)
 
 
@@ -144,8 +162,7 @@ class GWView(View):
 class GW_AjaxView(View):
     def get(self,request):
         print(request.GET.get('static_code'))
-
-        gw_list=GW_pre_table.objects.filter(createBy=request.user.first_name,staticcode=request.GET.get('static_code'))
+        gw_list=GW_pre_table.objects.filter(createBy=request.user.first_name,staticcode=request.GET.get('static_code'))#
         data=serializers.serialize('json',gw_list)
         return JsonResponse(data,safe=False)
 
@@ -156,7 +173,8 @@ class GW_AjaxView(View):
 
         record=GW_pre_table.objects.filter(pk=int(request.POST.get('gw_id')),PrintNum=request.POST.get('gw_printnum'))
         if request.POST.get('staict_code')=='POST':
-            record.update(staticcode=staict_code,postBy=request.user.username,posttime=datetime.now())
+            print(request.POST.get('gw_finishqty')+request.user.username+'hhhh')
+            record.update(staticcode=staict_code,FinishQty=request.POST.get('gw_finishqty'),postBy=request.user.username,posttime=datetime.now())
         else:
             record.update(staticcode=staict_code,updateBy=request.user.username,updatetime=datetime.now())
 
@@ -890,3 +908,22 @@ class PageLog_AjaxView(View):
                 prd_list=Page_loged.objects.all()
         data=serializers.serialize('json',prd_list)
         return JsonResponse(data,safe=False)
+class select2_test(View):
+    def get(self,request):
+        template_name='Tango_app/SELECT2.HTML'
+        return render(request,template_name)
+
+
+    def post(self,request):
+        if request.is_ajax:
+            gw_work_types= request.POST.get('values')
+            gw_printnum=request.POST.get('printnum')
+            gw_printname=request.POST.get('printname')
+            gw_workdate=request.POST.get('workdate')
+            gw_maker(gw_work_types,printnum=gw_printnum,printname=gw_printname,workdata=gw_workdate)
+
+
+            print(GW_pre_table.objects.filter(PrintNum=gw_printnum))
+
+        else:
+            return HttpResponse(request.POST.get('form 提交成功'))
