@@ -14,7 +14,7 @@ from Tango_app.forms import GW_forms , PRO_forms, DF_forms,ZJ_forms,OUT_forms,Pa
 from django.contrib.sessions.models import Session
 from guardian.shortcuts import assign_perm
 from django.core import serializers
-from Tango_app.record_maker import gw_maker
+from Tango_app.record_maker import gw_maker,prdMaker,dfMaker,zjMaker,set_gwFinalQty
 # Create your views here.
 @method_decorator([login_required,csrf_protect],name='dispatch')
 class IndexView(View):
@@ -96,35 +96,24 @@ class GWView(View):
 
     def get(self,request):
         template_name='Tango_app/GW_table.html'
-
         user=Longined_user.objects.get(UserSession=request.COOKIES.get('user_session')).user
-        # print(request.COOKIES.get('user_session'))
-
         gw_list=GW_pre_table.objects.filter(createBy=user.first_name,staticcode='DRAFT')
         form_list=[]
         gw_form=GW_forms()
         for item in gw_list:
             form_list.append(item)
-            # assign_perm('Tango_app.gw_draft_post',request.user,item)
         if request.user.is_anonymous :
             info_dict={'username':'用户未登录','first_name':'用户未登录'}
         else:
-
             info_dict={'username':request.user.username,'first_name':request.user.first_name}
             info_dict['form_list']=form_list
         info_dict['gw_form']=gw_form
         return render(request,template_name,info_dict)
 
-    # @login_required
     def post(self,request):
         template_name='Tango_app/GW_table.html'
         info_dict={'username':request.user.username,'first_name':request.user.first_name}
-        # form_list=[]
-        # gw_form=GW_forms()
-
         if request.user.is_authenticated():
-            # form=GW_forms(request.POST)
-            # if form.is_valid():
             gw_recordInfo={}
             if request.is_ajax:
                 gw_work_types=request.POST.get('work_types')
@@ -139,18 +128,10 @@ class GWView(View):
                 if gw_maker(gw_work_types,gw_recordInfo):
                     recoedlist=GW_pre_table.objects.filter(staticcode='DRAFT',createBy=gw_recordInfo['creator'])
                     data=serializers.serialize('json',recoedlist)
-
                     return JsonResponse(data,safe=False)
                 else:
                     print('记录生成失败')
                     return HttpResponse(request,'工务记录生成失败')
-                # record=form.save(commit=False)
-                # record.createBy=request.user.first_name
-                # record.save()
-                # assign_perm('Tango_app.gw_draft_post',request.user,record)
-
-
-
         else:
             return HttpResponseRedirect('/Tango_app/login')
         info_dict['gw_form']=gw_form
@@ -170,14 +151,11 @@ class GW_AjaxView(View):
 
     def post(self,request):
         staict_code=request.POST.get('static_code')
-
         record=GW_pre_table.objects.filter(pk=int(request.POST.get('gw_id')),PrintNum=request.POST.get('gw_printnum'))
-        if request.POST.get('staict_code')=='POST':
-            print(request.POST.get('gw_finishqty')+request.user.username+'hhhh')
-            record.update(staticcode=staict_code,FinishQty=request.POST.get('gw_finishqty'),postBy=request.user.username,posttime=datetime.now())
+        if staict_code=='POST':
+            record.update(staticcode=staict_code,FinishQty=int(request.POST.get('gw_finishqty')),postBy=request.user.username,posttime=datetime.now())
         else:
             record.update(staticcode=staict_code,updateBy=request.user.username,updatetime=datetime.now())
-
         gw_list=GW_pre_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT')
         data=serializers.serialize('json',gw_list)
         return JsonResponse(data,safe=False)
@@ -203,6 +181,7 @@ class GW_Mdf_View(View):
             gw_record.updateBy=request.user.first_name
             gw_record.updatetime=datetime.now()
             gw_record.save()
+
             # 返回所有已过帐状态的记录
             form_list=[]
             template_name='Tango_app/gw_mdf.html'
@@ -236,7 +215,7 @@ class GW_MdfView_ajax(View):
             record_id=request.POST.get('record_id')
             printnum=request.POST.get('printnum')
             k_val=request.POST.get('k_val')
-            print (k_val)
+
 
             record=GW_pre_table.objects.get(id=record_id,PrintNum=printnum)
             record.K_val=k_val
@@ -244,6 +223,8 @@ class GW_MdfView_ajax(View):
             record.CheckBy=request.user.username
             record.CheckTime=datetime.now()
             record.save()
+            set_gwFinalQty(record)
+            print(record.FinalQty)
             gw_list=GW_pre_table.objects.filter(staticcode='POST')
             data=serializers.serialize('json',gw_list)
             # 不是设置工务系数,就是发还操作
@@ -290,18 +271,33 @@ class PRD_View(View):
         template_name='Tango_app/prd.html'
         info_dict={'username':request.user.username,'first_name':request.user.first_name}
 
-        prd_form=PRO_forms()
+        # prd_form=PRO_forms()
         user=Longined_user.objects.get(UserSession=request.COOKIES.get('user_session')).user
         if request.user.is_authenticated():
-            form=PRO_forms(request.POST)
-            if form.is_valid():
-                record=form.save(commit=False)
-                record.createBy=request.user.first_name
-                record.save()
-                assign_perm('Tango_app.prd_draft_post',request.user,record)
-            gw_list=PRO_table.objects.filter(createBy=user.first_name,staticcode='DRAFT')
-
-            info_dict['prd_form']=prd_form
+            recordInfo={}
+            if request.is_ajax:
+                work_types=request.POST.get('work_types')
+                recordInfo['printnum']=request.POST.get('printnum')
+                recordInfo['printname']=request.POST.get('printname')
+                # gw_recordInfo['pagesize']=request.POST.get('pagesize')
+                recordInfo['workdate']=request.POST.get('workdate')
+                recordInfo['workdatetype']=request.POST.get('worktimetype')
+                recordInfo['remark']=request.POST.get('remark')
+                recordInfo['creator']=info_dict['first_name']
+                print(recordInfo['creator']+'hh'+recordInfo['remark'])
+                if prdMaker(work_types,recordInfo):
+                    recoedlist=PRO_table.objects.filter(staticcode='DRAFT',createBy=recordInfo['creator'])
+                    data=serializers.serialize('json',recoedlist)
+                    return JsonResponse(data,safe=False)
+            # form=PRO_forms(request.POST)
+            # if form.is_valid():
+            #     record=form.save(commit=False)
+            #     record.createBy=request.user.first_name
+            #     record.save()
+            #     assign_perm('Tango_app.prd_draft_post',request.user,record)
+            # gw_list=PRO_table.objects.filter(createBy=user.first_name,staticcode='DRAFT')
+            #
+            # info_dict['prd_form']=prd_form
 
         else:
             return HttpResponseRedirect('/Tango_app/login')
@@ -327,6 +323,7 @@ class PRD_ViewAjax(View):
             record=PRO_table.objects.get(pk=int(request.POST.get('prd_id')),PrintNum=request.POST.get('prd_printnum'))
             if static_code=='DELETED':
                 record.staticcode=static_code
+
                 record.save()
                 prd_list=PRO_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT')
 
@@ -336,6 +333,7 @@ class PRD_ViewAjax(View):
                 record.staticcode=static_code
                 record.postBy=request.user.first_name
                 record.posttime=datetime.now()
+                record.FinishQty=request.POST.get('finishqty')
                 record.save()
                 prd_list=PRO_table.objects.filter(createBy=request.user.first_name,staticcode=static_code)
         data=serializers.serialize('json',prd_list)
@@ -405,10 +403,7 @@ class DF_View(View):   #浏览器正常访问电分页面
         user=Longined_user.objects.get(UserSession=request.COOKIES.get('user_session')).user
         info_dict={'username':user.username,'first_name':user.first_name}
         template_name='Tango_app/df.html'
-
-
         df_form=DF_forms()
-
         if request.user.is_authenticated():
             form=DF_forms(request.POST)
             if form.is_valid():
@@ -416,9 +411,7 @@ class DF_View(View):   #浏览器正常访问电分页面
                 record.createBy=request.user.first_name
                 record.save()
                 assign_perm('Tango_app.df_draft_post',request.user,record)
-
             info_dict['df_form']=df_form
-
         else:
             return HttpResponseRedirect('/Tango_app/login')
         return render(request,template_name,info_dict)
@@ -428,19 +421,33 @@ class DF_View(View):   #浏览器正常访问电分页面
         user=Longined_user.objects.get(UserSession=request.COOKIES.get('user_session')).user
         info_dict={'username':user.username,'first_name':user.first_name}
 
-        df_form=DF_forms()
+        # df_form=DF_forms()
         if request.user.is_authenticated():
-
-            form=DF_forms(request.POST)
-
-
-            if form.is_valid():
-
-                record=form.save(commit=False)
-                record.createBy=user.first_name
-                record.save()
-                print('saved')
-                assign_perm('Tango_app.df_draft_post',request.user,record)
+            recordInfo={}
+            if request.is_ajax:
+                work_types=request.POST.get('work_types')
+                recordInfo['printnum']=request.POST.get('printnum')
+                recordInfo['printname']=request.POST.get('printname')
+                # gw_recordInfo['pagesize']=request.POST.get('pagesize')
+                recordInfo['workdate']=request.POST.get('workdate')
+                recordInfo['workdatetype']=request.POST.get('worktimetype')
+                recordInfo['remark']=request.POST.get('remark')
+                recordInfo['creator']=info_dict['first_name']
+                print(recordInfo['creator']+'hh'+recordInfo['remark'])
+                if dfMaker(work_types,recordInfo):
+                    recoedlist=DF_table.objects.filter(staticcode='DRAFT',createBy=recordInfo['creator'])
+                    data=serializers.serialize('json',recoedlist)
+                    return JsonResponse(data,safe=False)
+            # form=DF_forms(request.POST)
+            #
+            #
+            # if form.is_valid():
+            #
+            #     record=form.save(commit=False)
+            #     record.createBy=user.first_name
+            #     record.save()
+            #     print('saved')
+            #     assign_perm('Tango_app.df_draft_post',request.user,record)
 
             # gw_list=PRO_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT')
             # for item in gw_list:
@@ -480,6 +487,7 @@ class DF_AjaxView(View):
                 record.staticcode=static_code
                 record.postBy=request.user.first_name
                 record.posttime=datetime.now()
+                record.FinishQty=request.POST.get('finishqty')
                 record.save()
                 prd_list=DF_table.objects.filter(createBy=request.user.first_name,staticcode=static_code)
         data=serializers.serialize('json',prd_list)
@@ -573,19 +581,34 @@ class ZJ_View(View):   #浏览器正常访问质检页面
         template_name='Tango_app/zj.html'
         info_dict={'username':request.user.username,'first_name':request.user.first_name}
 
-        zj_form=ZJ_forms()
+        # zj_form=ZJ_forms()
         if request.user.is_authenticated():
+            recordInfo={}
+            if request.is_ajax:
+                work_types=request.POST.get('work_types')
+                recordInfo['printnum']=request.POST.get('printnum')
+                recordInfo['printname']=request.POST.get('printname')
+                # gw_recordInfo['pagesize']=request.POST.get('pagesize')
+                recordInfo['workdate']=request.POST.get('workdate')
+                recordInfo['workdatetype']=request.POST.get('worktimetype')
+                recordInfo['remark']=request.POST.get('remark')
+                recordInfo['creator']=info_dict['first_name']
+                print(recordInfo['creator']+'hh'+recordInfo['remark'])
+                if zjMaker(work_types,recordInfo):
+                    recoedlist=ZJ_table.objects.filter(staticcode='DRAFT',createBy=recordInfo['creator'])
+                    data=serializers.serialize('json',recoedlist)
+                    return JsonResponse(data,safe=False)
 
-            form=ZJ_forms(request.POST)
-
-
-            if form.is_valid():
-
-                record=form.save(commit=False)
-                record.createBy=request.user.first_name
-                record.save()
-                print('saved')
-                assign_perm('Tango_app.zj_draft_post',request.user,record)
+            # form=ZJ_forms(request.POST)
+            #
+            #
+            # if form.is_valid():
+            #
+            #     record=form.save(commit=False)
+            #     record.createBy=request.user.first_name
+            #     record.save()
+            #     print('saved')
+            #     assign_perm('Tango_app.zj_draft_post',request.user,record)
 
             # gw_list=PRO_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT')
             # for item in gw_list:
@@ -626,7 +649,9 @@ class ZJ_AjaxView(View):
                 record.WorkEndTime=request.POST.get('end_time')
                 record.staticcode=static_code
                 record.postBy=request.user.first_name
+
                 record.posttime=datetime.now()
+                record.FinishQty=request.POST.get('finishqty')
                 record.save()
                 prd_list=ZJ_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT')
         data=serializers.serialize('json',prd_list)
@@ -676,6 +701,7 @@ class ZJ_MdfViewAjax(View):
             record.CheckBy=request.user.username
             record.CheckTime=datetime.now()
             record.save()
+
             gw_list=ZJ_table.objects.filter(staticcode='POST')
             data=serializers.serialize('json',gw_list)
             # 不是设置工务系数,就是发还操作
@@ -723,7 +749,7 @@ class OUT_View(View):   #浏览器正常访问输出表页面
 
             form=OUT_forms(request.POST)
 
-
+            print('准备进入数据保存')
             if form.is_valid():
                 print('saved')
                 record=form.save(commit=False)
@@ -748,7 +774,9 @@ class OUT_View(View):   #浏览器正常访问输出表页面
 class OUT_AjaxView(View):
     def get(self,request):
         if request.is_ajax:
+
             static_code=request.GET.get('staict_code')
+            print(static_code)
             prd_list=OUT_table.objects.filter(staticcode=static_code,createBy=request.user.first_name)
             data=serializers.serialize('json',prd_list)
         else:

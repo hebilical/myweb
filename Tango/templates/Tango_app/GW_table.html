@@ -73,12 +73,7 @@
     </div>
     <br>
     <div class="GW_input_Part">
-      <!-- <form class="" action="" method="post">
-      {% csrf_token %}
-      {{gw_form}}
-      <br>
-      <button id='sub_btn' type="submit" name="">确认</button>
-    </form> -->
+
     <label for="">印号</label>
     <input type="text" name="printnum" id="printnum" style="width:80px">
     <label for="">印件名</label>
@@ -105,6 +100,7 @@
     <select id='work_type'  class="work_type" name="selected_worktype"   style="width:300px">
       <option value="SMY">数码样</option>
       <option value="LZ">蓝纸</option>
+      <option value="FTP">FTP下载</option>
       <option value="CTF">CTF</option>
       <option value="CTP">CTP</option>
       <option value="GB">改版</option>
@@ -125,43 +121,6 @@
     <button type="button" id='get_checked' class='get_record' name="button">查看已批核</button>
     <button type="button" id='get_del' class='get_record' name="button">查看已删除</button>
       <table id='gw_table' data-pagination="true" data-search="true" data-toggle="table">
-        <!-- <tr >
-          <th >ID</th>
-          <th >印号</th>
-          <th>印件名陈</th>
-          <th>开本</th>
-          <th>日期</th>
-          <th>工作内容</th>
-          <th>完成数</th>
-          <th>备注</th>
-          <th>难度系数</th>
-          <th>创建人</th>
-          <th>创建时间</th>
-          <th>当前状态</th>
-          <th>相关操作</th>
-        </tr>
-          {% for item in form_list %}
-            <tr>
-              <td class="gw_pk">{{ item.id }}</td>
-              <td class="gw_printnum">{{item.PrintNum}}</td>
-              <td>{{item.PrintName}}</td>
-              <td>{{item.get_sidetype_display}}</td>
-              <td>{{item.WorkData|date:'Y-m-d'}}</td>
-              <td>{{item.get_WorkType_display}}</td>
-              <td>{{item.FinishQty}}</td>
-              <td>{{item.remark}}</td>
-              <td>{{item.K_val}}</td>
-              <td>{{item.createBy}}</td>
-              <td>{{item.createtime|date:'Y-m-d H:i:s'}}</td>
-              <td>{{item.get_staticcode_display}}</td>
-              <td>
-                <button type="button" class='mdf_btn' name="del_button">删除</button>
-                <button type="button"  class='mdf_btn' name="post_button">送至下一级</button>
-              </td>
-            </tr>
-
-
-          {% endfor  %} -->
 
       </table>
 

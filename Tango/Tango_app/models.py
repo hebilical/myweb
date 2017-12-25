@@ -70,6 +70,7 @@ class GW_pre_table(models.Model):  #公务表
         ('SBL','算倍率'),
         ('COPYDOT','COPYDOT'),
         ('KP','刻盘'),
+        ('FTP','FTP下载')
     )
     WORKTIMETYPE_CHOICES=(
         ('A','白班'),
@@ -107,6 +108,7 @@ class GW_pre_table(models.Model):  #公务表
     postBy=models.CharField(max_length=20,null=True)
     CheckTime=models.DateTimeField(auto_now=False,null=True)
     CheckBy=models.CharField(max_length=20,null=True)
+    FinalQty=models.FloatField(default=0)
     staticcode=models.CharField(max_length=20,default='DRAFT',choices=STATIC_CHOICES)
     menber=models.CharField(max_length=200)
     remark=models.CharField(max_length=300,null=True)
@@ -174,6 +176,7 @@ class PRO_table (models.Model): #制作表
     postBy=models.CharField(max_length=20,null=True)
     CheckTime=models.DateTimeField(auto_now=False,null=True)
     CheckBy=models.CharField(max_length=20,null=True)
+    FinalQty=models.FloatField(default=0)
     staticcode=models.CharField(max_length=20,default='DRAFT',choices=STATIC_CHOICES)
     remark=models.CharField(max_length=200)
     def __str__(self):
@@ -238,6 +241,7 @@ class DF_table(models.Model): #电分表
     postBy=models.CharField(max_length=20,null=True)
     CheckTime=models.DateTimeField(auto_now=False,null=True)
     CheckBy=models.CharField(max_length=20,null=True)
+    FinalQty=models.FloatField(default=0)
     staticcode=models.CharField(max_length=20,default='DRAFT',choices=STATIC_CHOICES)
     remark=models.CharField(max_length=200)
     def __str__(self):
@@ -316,6 +320,7 @@ class OUT_table(models.Model):#输出表
     CheckTime=models.DateTimeField(auto_now=False,null=True)
     CheckBy=models.CharField(max_length=20,null=True)
     staticcode=models.CharField(max_length=20,default='DRAFT',choices=STATIC_CHOICES)
+    FinalQty=models.FloatField(default=0)
     remark=models.CharField(max_length=200)
     def __str__(self):
         return (self.PrintNum+'   '+self.PrintName)
@@ -375,6 +380,7 @@ class ZJ_table(models.Model):
     CheckTime=models.DateTimeField(auto_now=False,null=True)
     CheckBy=models.CharField(max_length=20,null=True)
     staticcode=models.CharField(max_length=20,default='DRAFT',choices=STATIC_CHOICES)
+    FinalQty=models.FloatField(default=0)
     remark=models.CharField(max_length=200)
     def __str__(self):
         return (self.PrintNum+'   '+self.PrintName)

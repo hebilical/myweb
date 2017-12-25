@@ -6,7 +6,7 @@
     <link rel="stylesheet" href='{% static "bootstrap-table/dist/bootstrap-table.css" %}'>
     <link rel="stylesheet" href='{% static "bootstrap3-editable/css/bootstrap-editable.css" %}'>
     <link rel="stylesheet" href='{% static "bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" %}'>
-
+    <link rel="stylesheet" href='{% static "select2/dist/css/select2.min.css" %}'>
     <!-- <link rel="stylesheet" href="./css/gw.css"> -->
     <script type="text/javascript" src='{% static "JS/jquery-3.2.1.js" %}'>
 
@@ -17,7 +17,7 @@
     <script type="text/javascript"  src='{% static "bootstrap-table/dist/bootstrap-table.js" %}'>
 
     </script>
-    <script type="text/javascript" src='{% static "JS/momentjs.js" %}'>
+    <script type="text/javascript"  src='{% static "select2/dist/js/select2.min.js" %}'>
 
     </script>
     <!-- 中文支持 -->
@@ -78,13 +78,33 @@
     </div>
 
     <br>
-    <div class="df_input_Part">
-      <form class="" action="" method="post">
-      {% csrf_token %}
-      {{zj_form}}
-      <br>
-      <button id='sub_btn' type="submit" name="">确认</button>
-    </form>
+    <div class="inputPart">
+
+    <label for="">印号</label>
+    <input type="text" name="printnum" id="printnum" style="width:80px">
+    <label for="">印件名</label>
+    <input type="text" name="printname" id='printname' value="">
+    <label for="">工作日期</label>
+    <input id='workdate' type="text" name="workdate"  value="" style="width:90px">
+    <label for="">班次</label >
+    <select id='worktimetype' class="" name="worktimetype" style="width:70px">
+      <option value="A">白班</option>
+      <option value="B">夜班</option>
+    </select>
+    <label for="" >请选择</label>
+    <select id='work_type'  class="work_type" name="selected_worktype"   style="width:300px">
+      <option value="JGZ">激光纸</option>
+      <option value="CSG">查色稿</option>
+      <option value="CLZ">查蓝纸</option>
+      <option value="CFL">查菲林</option>
+      <option value="CB">查版</option>
+      <option value="KB">烤版</option>
+      <option value="CSMY">裁数码样</option>
+    </select>
+
+    <label for="">备注</label>
+    <input id='remark' type="text" name="remark" value="">
+    <button id='submit_btn' type="button"  name="button">提交</button>
     </div>
     <div class="df_show_part">
     <button type="button" id='get_draft' name="button">查看初稿</button>

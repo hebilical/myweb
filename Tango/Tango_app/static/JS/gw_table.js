@@ -52,6 +52,7 @@ $(document).ready(function() {
           postby:el.fields.postBy,
           posttime:el.fields.posttime,
           checkBy:el.fields.CheckBy,
+          finalqty:el.fields.FinalQty,
           checkTime:el.fields.CheckTime
 
         };
@@ -65,7 +66,6 @@ $(document).ready(function() {
 
 
   function GW_TableInit () {
-
   $('#gw_table').bootstrapTable('destroy');
   $('#gw_table').bootstrapTable(
     {
@@ -172,7 +172,7 @@ $(document).ready(function() {
       }
 
         ],
-        exportDataType:'all',//允许导出
+        exportDataType:'all',
         showExport:true,
         exportTypes:['excel'],
         buttonsAlign:'right',
@@ -197,7 +197,7 @@ $(document).ready(function() {
           var record_printnum=$element.closest('tr').find('[class="printnum"]').text();
           var finishqty=$element.closest('tr').find('[data-name="FinishQty"]').text();
           if (field==='post_field'){
-            alert(finishqty);
+            /* 如果点击的是过帐 */
              $.ajax({
                url: '/Tango_app/gwajax/',
                type: 'POST',
@@ -214,6 +214,7 @@ $(document).ready(function() {
              });
            }
          if(field==='del_field'){
+           /* 如果点击的是删除 */
             $.ajax({
               url: '/Tango_app/gwajax/',
               type: 'POST',
@@ -228,11 +229,11 @@ $(document).ready(function() {
               }
             });
 
-         }//删除按钮事件完结
+         }
         },
     }
   );//表格初始化结束
-}
+  }
 
 
   function TableInit_NotDraft() {
@@ -367,8 +368,6 @@ $(document).ready(function() {
     maximumSelectionLength:8
   });
 
-
-
 $('#submit_btn').on('click',  function(event) {
   event.preventDefault();
   /* 点击提交时候取工务记录的基本信息发送到后台,并取回初稿状态的记录 */
@@ -408,46 +407,12 @@ $('#submit_btn').on('click',  function(event) {
 
   } else {
     alert('印号格式不正确,或者 "印件名称" 和 "工作日期" 未填写!');
-
-
   }
-
-
 
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   $('#get_draft').on('click', function(event) {
-
+    /* 取初稿状态的记录 */
     $.ajax({
       url: '/Tango_app/gwajax',
       type: 'GET',
@@ -478,19 +443,5 @@ $('.get_record').on('click', function(event) {
       $('#gw_table').bootstrapTable('load',datajson);
     }
   });
-
-
-//处理表格内操作按钮的点击事件
-
-
-
 });
-
-
-
-
-
-
-
-
 });

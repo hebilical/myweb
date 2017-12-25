@@ -4,6 +4,62 @@
 
 $(document).ready(function () {
 
+  function dataBuild(data) {
+    var json =$.parseJSON(data);
+    var work_type={
+          SJ:'收集',
+          ZZJC:'制作检查',
+          XT:'修图',
+          TD:'褪底',
+          ZZ:'制作',
+          GB:'改版',
+          FP:'发排',
+          PDF_FP:'PDF发排',
+          PDF_TWJ:'PDF替文件',
+          PDF_GB:'PDF改版',
+          CSMY:'出数码样',
+          CLZ:'出蓝纸',
+          KGP:'克光盘',
+    };
+    var staict_type={
+          DRAFT:'初稿',
+          POST:'已过帐',
+          CHECKED:'已审核',
+          DELETED:'已删除',
+    };
+    var date_type={
+      A:'白班',
+      B:'夜班'
+    };
+    var jsondata=[];
+    $.each(json,function(index, el) {
+
+      var unit_json={
+      record_id:el.pk,
+      printnum:el.fields.PrintNum,
+      printname:el.fields.PrintName,
+      workdate:el.fields.WorkData,
+      date_type:date_type[el.fields.WorkTimeType],
+      worktype:work_type[el.fields.WorkType],
+      work_start_time:el.fields.WorkStartTime,
+      work_end_time:el.fields.WorkEndTime,
+      FinishQty:el.fields.FinishQty,
+      k_val:el.fields.K_val,
+      remark:el.fields.remark,
+      static_code:staict_type[el.fields.staticcode],
+      createBy:el.fields.createBy,
+      createtime:el.fields.createtime,
+      postby:el.fields.postBy,
+      posttime:el.fields.posttime,
+      checkBy:el.fields.CheckBy,
+      checkTime:el.fields.CheckTime
+      };
+      jsondata.push(unit_json);
+
+    });
+    return jsondata;
+
+  }
 
   /* 系数修改按钮点击事件,将信息提交到后台,并且返回修改后的数据  */
   $('.static_btn').on('click',function () {
@@ -179,33 +235,34 @@ $(document).ready(function () {
                     },
                     success:function (data) {
 
-                      var json=$.parseJSON(data);
-                      var jsondata=[];
-                      $.each(json,function(index, el) {
-
-                var unit_json={
-                  record_id:el.pk,
-                  printnum:el.fields.PrintNum,
-                  printname:el.fields.PrintName,
-                  workdate:el.fields.WorkData,
-                  date_type:date_type[el.fields.WorkTimeType],
-                  worktype:work_type[el.fields.WorkType],
-                  work_start_time:el.fields.WorkStartTime,
-                  work_end_time:el.fields.WorkEndTime,
-                  FinishQty:el.fields.FinishQty,
-                  k_val:el.fields.K_val,
-                  remark:el.fields.remark,
-                  static_code:staict_type[el.fields.staticcode],
-                  createBy:el.fields.createBy,
-                  createtime:el.fields.createtime,
-                  postby:el.fields.postBy,
-                  posttime:el.fields.posttime,
-                  checkBy:el.fields.CheckBy,
-                  checkTime:el.fields.CheckTime
-                  };
-                        jsondata.push(unit_json);
-
-                      });
+                //       var json=$.parseJSON(data);
+                //       var jsondata=[];
+                //       $.each(json,function(index, el) {
+                //
+                // var unit_json={
+                //   record_id:el.pk,
+                //   printnum:el.fields.PrintNum,
+                //   printname:el.fields.PrintName,
+                //   workdate:el.fields.WorkData,
+                //   date_type:date_type[el.fields.WorkTimeType],
+                //   worktype:work_type[el.fields.WorkType],
+                //   work_start_time:el.fields.WorkStartTime,
+                //   work_end_time:el.fields.WorkEndTime,
+                //   FinishQty:el.fields.FinishQty,
+                //   k_val:el.fields.K_val,
+                //   remark:el.fields.remark,
+                //   static_code:staict_type[el.fields.staticcode],
+                //   createBy:el.fields.createBy,
+                //   createtime:el.fields.createtime,
+                //   postby:el.fields.postBy,
+                //   posttime:el.fields.posttime,
+                //   checkBy:el.fields.CheckBy,
+                //   checkTime:el.fields.CheckTime
+                //   };
+                //         jsondata.push(unit_json);
+                //
+                //       });
+                      var jsondata=dataBuild(data);
 
                       $('#prd_table_k').bootstrapTable('load',jsondata);
 
@@ -243,80 +300,47 @@ $(document).ready(function () {
 
 
             });//表格初始化完毕
-            var datajson=[];
-
-            $.each(json,function(index, el) {
-
-
-              // 创建和json对象存放单条记录
-              var unit_json={
-                    record_id:el.pk,
-                    printnum:el.fields.PrintNum,
-                    printname:el.fields.PrintName,
-                    workdate:el.fields.WorkData,
-                    date_type:date_type[el.fields.WorkTimeType],
-                    worktype:work_type[el.fields.WorkType],
-                    work_start_time:el.fields.WorkStartTime,
-                    work_end_time:el.fields.WorkEndTime,
-                    FinishQty:el.fields.FinishQty,
-                    k_val:el.fields.K_val,
-                    remark:el.fields.remark,
-                    static_code:staict_type[el.fields.staticcode],
-                    createBy:el.fields.createBy,
-                    createtime:el.fields.createtime,
-                    postby:el.fields.postBy,
-                    posttime:el.fields.posttime,
-                    checkBy:el.fields.CheckBy,
-                    checkTime:el.fields.CheckTime
-                    };
-              datajson.push(unit_json);
-
-              console.log(datajson);
-            });
+            // var datajson=[];
+            //
+            // $.each(json,function(index, el) {
+            //
+            //
+            //   // 创建和json对象存放单条记录
+            //   var unit_json={
+            //         record_id:el.pk,
+            //         printnum:el.fields.PrintNum,
+            //         printname:el.fields.PrintName,
+            //         workdate:el.fields.WorkData,
+            //         date_type:date_type[el.fields.WorkTimeType],
+            //         worktype:work_type[el.fields.WorkType],
+            //         work_start_time:el.fields.WorkStartTime,
+            //         work_end_time:el.fields.WorkEndTime,
+            //         FinishQty:el.fields.FinishQty,
+            //         k_val:el.fields.K_val,
+            //         remark:el.fields.remark,
+            //         static_code:staict_type[el.fields.staticcode],
+            //         createBy:el.fields.createBy,
+            //         createtime:el.fields.createtime,
+            //         postby:el.fields.postBy,
+            //         posttime:el.fields.posttime,
+            //         checkBy:el.fields.CheckBy,
+            //         checkTime:el.fields.CheckTime
+            //         };
+            //   datajson.push(unit_json);
+            //
+            //   console.log(datajson);
+            // });
+            var datajson=dataBuild(data);
             $('#prd_table_k').bootstrapTable('load',datajson);
           }
       });
-
-
       }
-
       else {
-        // 非过帐状态可以进行发还操作
         $.ajax({
           url:'/Tango_app/prd/modify_ajax',
           type:'GET',
           data:{static_code:btn_type[type_code]},
           success: function (data) {
-
-
-            var json =$.parseJSON(data);
-
-            var work_type={
-                  SJ:'收集',
-                  ZZJC:'制作检查',
-                  XT:'修图',
-                  TD:'褪底',
-                  ZZ:'制作',
-                  GB:'改版',
-                  FP:'发排',
-                  PDF_FP:'PDF发排',
-                  PDF_TWJ:'PDF替文件',
-                  PDF_GB:'PDF改版',
-                  CSMY:'出数码样',
-                  CLZ:'出蓝纸',
-                  KGP:'克光盘',
-            };
-            var date_type= {
-              A:'白班',
-              B:'夜班',
-            };
-            var staict_type={
-                  DRAFT:'初稿',
-                  POST:'已过帐',
-                  CHECKED:'已审核',
-                  DELETED:'已删除',
-            };
-            // 下面进行表格初始化
             $('#prd_table_k').bootstrapTable('destroy');
 
             $('#prd_table_k').bootstrapTable({
@@ -413,11 +437,7 @@ $(document).ready(function () {
                                     var strHtml ='<button class="k_checked_btn">'+'发还'+'</button>';
                                     return strHtml;
                                 },
-                // editable:{defaultValue:'test'},
-
               }
-
-
               ],
               onClickCell:function (field,value,row,$element) {
 
@@ -462,13 +482,7 @@ $(document).ready(function () {
 
                   }
                 });
-
-
-
-
               },//onClickCell 事件函数结束
-
-
               exportDataType:'all',
               showExport:true,
               exportTypes:['excel'],
@@ -494,41 +508,7 @@ $(document).ready(function () {
 
 
             });
-            var datajson=[];
-            $.each(json,function(index, el) {
-
-
-
-
-
-
-
-  // 创建和json对象存放单条记录
-      var unit_json={
-              record_id:el.pk,
-              printnum:el.fields.PrintNum,
-              printname:el.fields.PrintName,
-              workdate:el.fields.WorkData,
-              date_type:date_type[el.fields.WorkTimeType],
-              worktype:work_type[el.fields.WorkType],
-              work_start_time:el.fields.WorkStartTime,
-              work_end_time:el.fields.WorkEndTime,
-              FinishQty:el.fields.FinishQty,
-              k_val:el.fields.K_val,
-              remark:el.fields.remark,
-              static_code:staict_type[el.fields.staticcode],
-              createBy:el.fields.createBy,
-              createtime:el.fields.createtime,
-              postby:el.fields.postBy,
-              posttime:el.fields.posttime,
-              checkBy:el.fields.CheckBy,
-              checkTime:el.fields.CheckTime
-          };
-              datajson.push(unit_json);
-
-            });
-
-            console.log(datajson);
+            var datajson=dataBuild(data);
             $('#prd_table_k').bootstrapTable('load',datajson);
           }
       });
