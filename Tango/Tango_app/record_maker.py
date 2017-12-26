@@ -126,14 +126,15 @@ def set_dfFinalQty(record):
     }
     scan_list=['SCAN_FS','SCAN_TS']
     if record.WorkType in scan_list:
-        record.FinalQty=k_dict[record.WorkType]*float(record.FinishQty)
+        record.FinalQty=k_dict[record.WorkType]*float(record.FinishQty)*float(record.Scan_K_val)
     else:
-        if record.WorkType=='COPYDOT':
-            record.FinalQty=record.FinishQty*100
+        if record.WorkType=='SCAN_COPYDOT':
+            record.FinalQty=float(record.FinishQty)*100
         if record.WorkType=='COR_NEW' or record.WorkType=='COR_GB':
-            record.FinalQty=record.FinishQty*record.Week_val
-        else:
-            record.FinalQty=record.FinishQty*30
+            print()
+            record.FinalQty=float(record.FinishQty)*float(record.Week_val)
+        if record.WorkType=='COR_ZCTY':
+            record.FinalQty=record.FinishQty*30    
     record.save()
 
 
@@ -157,7 +158,3 @@ def set_zjFinalQty(record):
     else:
         record.FinalQty=float(record.FinalQty)*k_dict[record.WorkType]
         record.save()
-
-
-
-        

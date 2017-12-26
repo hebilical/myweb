@@ -14,7 +14,7 @@ from Tango_app.forms import GW_forms , PRO_forms, DF_forms,ZJ_forms,OUT_forms,Pa
 from django.contrib.sessions.models import Session
 from guardian.shortcuts import assign_perm
 from django.core import serializers
-from Tango_app.record_maker import gw_maker,prdMaker,dfMaker,zjMaker,set_gwFinalQty
+from Tango_app.record_maker import gw_maker,prdMaker,dfMaker,zjMaker,set_gwFinalQty,set_prdFinalQty,set_dfFinalQty,set_zjFinalQty
 # Create your views here.
 @method_decorator([login_required,csrf_protect],name='dispatch')
 class IndexView(View):
@@ -224,7 +224,6 @@ class GW_MdfView_ajax(View):
             record.CheckTime=datetime.now()
             record.save()
             set_gwFinalQty(record)
-            print(record.FinalQty)
             gw_list=GW_pre_table.objects.filter(staticcode='POST')
             data=serializers.serialize('json',gw_list)
             # 不是设置工务系数,就是发还操作
@@ -374,14 +373,13 @@ class PRD_MdfViewAjax(View):
             record_id=request.POST.get('record_id')
             printnum=request.POST.get('printnum')
             k_val=request.POST.get('k_val')
-            print (k_val)
-
             record=PRO_table.objects.get(id=record_id,PrintNum=printnum)
             record.K_val=k_val
             record.staticcode='CHECKED'
             record.CheckBy=request.user.username
             record.CheckTime=datetime.now()
             record.save()
+            set_prdFinalQty(record)
             gw_list=PRO_table.objects.filter(staticcode='POST')
             data=serializers.serialize('json',gw_list)
             # 不是设置工务系数,就是发还操作
@@ -489,7 +487,7 @@ class DF_AjaxView(View):
                 record.posttime=datetime.now()
                 record.FinishQty=request.POST.get('finishqty')
                 record.save()
-                prd_list=DF_table.objects.filter(createBy=request.user.first_name,staticcode=static_code)
+                prd_list=DF_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT')
         data=serializers.serialize('json',prd_list)
         return JsonResponse(data,safe=False)
 
@@ -539,6 +537,7 @@ class DF_MdfViewAjax(View):
             record.CheckBy=request.user.username
             record.CheckTime=datetime.now()
             record.save()
+            set_dfFinalQty(record)
             gw_list=DF_table.objects.filter(staticcode='POST')
             data=serializers.serialize('json',gw_list)
             # 不是设置工务系数,就是发还操作
@@ -598,24 +597,6 @@ class ZJ_View(View):   #浏览器正常访问质检页面
                     recoedlist=ZJ_table.objects.filter(staticcode='DRAFT',createBy=recordInfo['creator'])
                     data=serializers.serialize('json',recoedlist)
                     return JsonResponse(data,safe=False)
-
-            # form=ZJ_forms(request.POST)
-            #
-            #
-            # if form.is_valid():
-            #
-            #     record=form.save(commit=False)
-            #     record.createBy=request.user.first_name
-            #     record.save()
-            #     print('saved')
-            #     assign_perm('Tango_app.zj_draft_post',request.user,record)
-
-            # gw_list=PRO_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT')
-            # for item in gw_list:
-            #     form_list.append(item)
-
-            # info_dict['form_list']=form_list
-            # return JsonResponse(data,safe=False)
         else:
             return HttpResponseRedirect('/Tango_app/login')
         info_dict['zj_form']=zj_form
@@ -692,15 +673,14 @@ class ZJ_MdfViewAjax(View):
             record_id=request.POST.get('record_id')
             printnum=request.POST.get('printnum')
             k_val=request.POST.get('k_val')
-
-            print(k_val)
-
             record=ZJ_table.objects.get(id=record_id,PrintNum=printnum)
             record.K_val=k_val
             record.staticcode='CHECKED'
             record.CheckBy=request.user.username
             record.CheckTime=datetime.now()
             record.save()
+            set_zjFinalQty(record)
+
 
             gw_list=ZJ_table.objects.filter(staticcode='POST')
             data=serializers.serialize('json',gw_list)

@@ -385,9 +385,9 @@ function tableInit_Notdraft() {
 
 
 
-$('#workdate').on('focus', function(event) {
 
-  $(this).datetimepicker({
+
+  $('#workdate').datetimepicker({
     minView:'month',
     format:'yyyy-mm-dd',
     language:'zh-CN',
@@ -396,7 +396,7 @@ $('#workdate').on('focus', function(event) {
     todayHightlight:true
 
   });
-});
+
 
 
 
