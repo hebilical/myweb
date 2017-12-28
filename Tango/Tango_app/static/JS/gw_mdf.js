@@ -2,6 +2,7 @@
 $(document).ready(function () {
 
 function dataBuild(data) {
+
   var json =$.parseJSON(data);
   var work_type={
                 SMY:"数码样",
@@ -12,6 +13,7 @@ function dataBuild(data) {
                 SBL:"算倍率",
                 COPYDOT:"COPTDOT",
                 KP:"刻盘",
+                FTP:"FTP下载"
   };
   var size_type={
     1:'4K',
@@ -379,6 +381,19 @@ function TableInit_NotPost() {
 
 }
 
+
+
+$.ajax({
+  url:'/Tango_app/gw/modify_ajax',
+  type:'GET',
+  data:{static_code:'POST'},
+  success: function (data) {
+    var datajson=dataBuild(data);
+    tableInit();
+    $('#gw_table_k').bootstrapTable('load',datajson);
+  }
+});
+
   /* 系数修改按钮点击事件,将信息提交到后台,并且返回修改后的数据  */
   $('.static_btn').on('click',function () {
       /* Act on the event */
@@ -405,6 +420,7 @@ function TableInit_NotPost() {
           type:'GET',
           data:{static_code:btn_type[type_code]},
           success: function (data) {
+
             var datajson=dataBuild(data);
             TableInit_NotPost();
             $('#gw_table_k').bootstrapTable('load',datajson);

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    {% load static %}
+    <link rel="stylesheet" href='{% static "bootstrap-3.3.7-dist/css/bootstrap.css" %}'>
+    <link rel="stylesheet" href='{% static "bootstrap-table/dist/bootstrap-table.css" %}'>
+    <link rel="stylesheet" href='{% static "bootstrap3-editable/css/bootstrap-editable.css" %}'>
+    <link rel="stylesheet" href='{% static "bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" %}'>
+    <!-- <link rel="stylesheet" href='{% static "select2/dist/css/select2.min.css" %}'> -->
+    <!-- <link rel="stylesheet" href="./css/gw.css"> -->
+    <script type="text/javascript" src='{% static "JS/jquery-3.2.1.js" %}'>
+
+    </script>
+    <script type="text/javascript" src='{% static "bootstrap-3.3.7-dist/js/bootstrap.js" %}'>
+
+    </script>
+    <script type="text/javascript"  src='{% static "bootstrap-table/dist/bootstrap-table.js" %}'>
+
+    </script>
+    <!-- <script type="text/javascript"  src='{% static "select2/dist/js/select2.min.js" %}'>
+
+    </script> -->
+    <!-- 中文支持 -->
+    <!-- <script type="text/javascript"  src='{% static "bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" %}'>
+
+    </script> -->
+    <!-- 时间选择器 -->
+    <script type="text/javascript"  src='{% static "bootstrap-datetimepicker/js/bootstrap-datetimepicker.js" %}'>
+
+    </script>
+    <!-- 中文支持 -->
+    <script type="text/javascript"  src='{% static "bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" %}'>
+
+    </script>
+
+    <script type="text/javascript" src='{% static "bootstrap-table/dist/locale/bootstrap-table-zh-CN.js" %}'>
+  // 支持表格导出
+    </script>
+    <script type="text/javascript" src='{% static "tableExport.jquery.plugin/tableExport.js" %}'>
+
+    </script>
+    <script type="text/javascript" src='{% static "tableExport.jquery.plugin/libs/js-xlsx/xlsx.core.min.js" %}'>
+
+    </script>
+
+    <script type="text/javascript"  src='{% static "bootstrap-table/dist/extensions/export/bootstrap-table-export.js" %}'>
+
+    </script>
+    <!-- 支持表格在线编辑 -->
+
+    <script type="text/javascript" src='{% static "bootstrap3-editable/js/bootstrap-editable.js" %}' >
+
+    </script>
+    <script type="text/javascript"  src='{% static "bootstrap-table/dist/extensions/editable/bootstrap-table-editable.js" %}'>
+
+    </script>
+    <!--  处理Django的CSRF保护-->
+
+    <script type="text/javascript" src='{% static "JS/Ajax.js" %}'>
+
+    </script>
+    <script type="text/javascript" src='{% static "JS/report.js" %}'>
+
+    </script>
+    <meta charset="utf-8">
+
+    <title>记录查看或导出</title>
+  </head>
+  <body>
+
+    <h2>月产量导出</h2>
+    <a href="/Tango_app"><h4>返回主页</h4></a>
+    <div class="input_part">
+      <label for="">起点时间:</label>
+      <input type="text" id='start_time' name="start_time" value="">
+
+      <label for="">截止时间:</label>
+      <input type="text" id='end_time'  name="end_time" value="">
+      <label for="">类型</label>
+      <select class="" id='report_type' name="report_type">
+        <option value="GW">工务</option>
+        <option value="PRD">制作</option>
+        <option value="DF">电分</option>
+        <option value="OUT">输出</option>
+        <option value="ZJ">质检</option>
+
+      </select>
+      <button type="button" id='ser_button' name="ser_button">确认</button>
+
+    </div>
+    <div class="record_show">
+      <table id='resultTabl'>
+
+      </table>
+
+    </div>
+
+  </body>
+</html>

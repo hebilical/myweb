@@ -388,6 +388,21 @@ $(document).ready(function () {
 
 
 }
+
+$.ajax({
+  url:'/Tango_app/df/modify_ajax/',
+  type:'GET',
+  data:{static_code:'POST'},
+  success: function (data) {
+    tableInit();
+    var datajson=dataBuild(data);
+    $('#df_table_k').bootstrapTable('load',datajson);
+  }
+});
+
+
+
+
   /* 系数修改按钮点击事件,将信息提交到后台,并且返回修改后的数据  */
   $('.static_btn').on('click',function () {
       /* Act on the event */

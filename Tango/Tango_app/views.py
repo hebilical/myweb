@@ -1,4 +1,5 @@
 import uuid
+import json
 from django.shortcuts import render,render_to_response
 from datetime import datetime
 from django.contrib.auth import  authenticate,login,logout
@@ -14,7 +15,7 @@ from Tango_app.forms import GW_forms , PRO_forms, DF_forms,ZJ_forms,OUT_forms,Pa
 from django.contrib.sessions.models import Session
 from guardian.shortcuts import assign_perm
 from django.core import serializers
-from Tango_app.record_maker import gw_maker,prdMaker,dfMaker,zjMaker,set_gwFinalQty,set_prdFinalQty,set_dfFinalQty,set_zjFinalQty
+from Tango_app.record_maker import gw_maker,prdMaker,dfMaker,zjMaker,set_gwFinalQty,set_prdFinalQty,set_dfFinalQty,set_zjFinalQty,getReport,getDetilReport
 # Create your views here.
 @method_decorator([login_required,csrf_protect],name='dispatch')
 class IndexView(View):
@@ -126,7 +127,7 @@ class GWView(View):
                 gw_recordInfo['creator']=info_dict['first_name']
                 print(gw_recordInfo['creator']+'hh'+gw_recordInfo['gw_remark'])
                 if gw_maker(gw_work_types,gw_recordInfo):
-                    recoedlist=GW_pre_table.objects.filter(staticcode='DRAFT',createBy=gw_recordInfo['creator'])
+                    recoedlist=GW_pre_table.objects.filter(staticcode='DRAFT',createBy=gw_recordInfo['creator']).order_by('-createtime')[:1000]
                     data=serializers.serialize('json',recoedlist)
                     return JsonResponse(data,safe=False)
                 else:
@@ -142,8 +143,8 @@ class GWView(View):
 @method_decorator([login_required,csrf_protect],name='dispatch')
 class GW_AjaxView(View):
     def get(self,request):
-        print(request.GET.get('static_code'))
-        gw_list=GW_pre_table.objects.filter(createBy=request.user.first_name,staticcode=request.GET.get('static_code'))#
+        # print(request.GET.get('static_code'))
+        gw_list=GW_pre_table.objects.filter(createBy=request.user.first_name,staticcode=request.GET.get('static_code')).order_by('-createtime')[:1000]
         data=serializers.serialize('json',gw_list)
         return JsonResponse(data,safe=False)
 
@@ -156,7 +157,7 @@ class GW_AjaxView(View):
             record.update(staticcode=staict_code,FinishQty=int(request.POST.get('gw_finishqty')),postBy=request.user.username,posttime=datetime.now())
         else:
             record.update(staticcode=staict_code,updateBy=request.user.username,updatetime=datetime.now())
-        gw_list=GW_pre_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT')
+        gw_list=GW_pre_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT').order_by('-createtime')[:1000]
         data=serializers.serialize('json',gw_list)
         return JsonResponse(data,safe=False)
 
@@ -185,7 +186,7 @@ class GW_Mdf_View(View):
             # 返回所有已过帐状态的记录
             form_list=[]
             template_name='Tango_app/gw_mdf.html'
-            gw_list=GW_pre_table.objects.filter(staticcode='POST')
+            gw_list=GW_pre_table.objects.filter(staticcode='POST').order_by('-posttime')[:1000]
             data=serializers.serialize('json',gw_list)
             return JsonResponse(data,safe=False)
         else:
@@ -198,7 +199,7 @@ class GW_MdfView_ajax(View):
     def get(self,request):
         if request.is_ajax:
             staict_code=request.GET.get('static_code')
-            gw_list=GW_pre_table.objects.filter(staticcode=staict_code)
+            gw_list=GW_pre_table.objects.filter(staticcode=staict_code).order_by('-createtime')[:1000]
             data=serializers.serialize('json',gw_list)
             return JsonResponse(data,safe=False)
         else:
@@ -224,7 +225,7 @@ class GW_MdfView_ajax(View):
             record.CheckTime=datetime.now()
             record.save()
             set_gwFinalQty(record)
-            gw_list=GW_pre_table.objects.filter(staticcode='POST')
+            gw_list=GW_pre_table.objects.filter(staticcode='POST').order_by('-posttime')[:1000]
             data=serializers.serialize('json',gw_list)
             # 不是设置工务系数,就是发还操作
         else:
@@ -255,7 +256,7 @@ class PRD_View(View):
                 record.createBy=request.user.first_name
                 record.save()
                 assign_perm('Tango_app.prd_draft_post',request.user,record)
-            prd_list=PRO_table.objects.filter(createBy=user.first_name,staticcode='DRAFT')
+            prd_list=PRO_table.objects.filter(createBy=user.first_name,staticcode='DRAFT').order_by('-createtime')[:1000]
             # for item in gw_list:
             #     form_list.append(item)
             info_dict['prd_form']=prd_form
@@ -285,7 +286,7 @@ class PRD_View(View):
                 recordInfo['creator']=info_dict['first_name']
                 print(recordInfo['creator']+'hh'+recordInfo['remark'])
                 if prdMaker(work_types,recordInfo):
-                    recoedlist=PRO_table.objects.filter(staticcode='DRAFT',createBy=recordInfo['creator'])
+                    recoedlist=PRO_table.objects.filter(staticcode='DRAFT',createBy=recordInfo['creator']).order_by('-createtime')[:1000]
                     data=serializers.serialize('json',recoedlist)
                     return JsonResponse(data,safe=False)
             # form=PRO_forms(request.POST)
@@ -309,7 +310,7 @@ class PRD_ViewAjax(View):
 
         if request.is_ajax:
             static_code=request.GET.get('staict_code')
-            prd_list=PRO_table.objects.filter(staticcode=static_code,createBy=request.user.first_name)
+            prd_list=PRO_table.objects.filter(staticcode=static_code,createBy=request.user.first_name).order_by('-createtime')[:1000]
             data=serializers.serialize('json',prd_list)
         else:
             data=[]
@@ -322,9 +323,8 @@ class PRD_ViewAjax(View):
             record=PRO_table.objects.get(pk=int(request.POST.get('prd_id')),PrintNum=request.POST.get('prd_printnum'))
             if static_code=='DELETED':
                 record.staticcode=static_code
-
                 record.save()
-                prd_list=PRO_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT')
+                prd_list=PRO_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT').order_by('-createtime')[:1000]
 
             else:
                 record.WorkStartTime=request.POST.get('start_time')
@@ -334,7 +334,7 @@ class PRD_ViewAjax(View):
                 record.posttime=datetime.now()
                 record.FinishQty=request.POST.get('finishqty')
                 record.save()
-                prd_list=PRO_table.objects.filter(createBy=request.user.first_name,staticcode=static_code)
+                prd_list=PRO_table.objects.filter(createBy=request.user.first_name,staticcode=static_code).order_by('-createtime')[:1000]
         data=serializers.serialize('json',prd_list)
         return JsonResponse(data,safe=False)
 
@@ -360,7 +360,7 @@ class PRD_MdfViewAjax(View):
     def get(self,request):
         if request.is_ajax:
             staict_code=request.GET.get('static_code')
-            gw_list=PRO_table.objects.filter(staticcode=staict_code)
+            gw_list=PRO_table.objects.filter(staticcode=staict_code).order_by('-createtime')[:1000]
             data=serializers.serialize('json',gw_list)
             return JsonResponse(data,safe=False)
         else:
@@ -380,7 +380,7 @@ class PRD_MdfViewAjax(View):
             record.CheckTime=datetime.now()
             record.save()
             set_prdFinalQty(record)
-            gw_list=PRO_table.objects.filter(staticcode='POST')
+            gw_list=PRO_table.objects.filter(staticcode='POST').order_by('posttime')[:1000]
             data=serializers.serialize('json',gw_list)
             # 不是设置工务系数,就是发还操作
         else:
@@ -433,7 +433,7 @@ class DF_View(View):   #浏览器正常访问电分页面
                 recordInfo['creator']=info_dict['first_name']
                 print(recordInfo['creator']+'hh'+recordInfo['remark'])
                 if dfMaker(work_types,recordInfo):
-                    recoedlist=DF_table.objects.filter(staticcode='DRAFT',createBy=recordInfo['creator'])
+                    recoedlist=DF_table.objects.filter(staticcode='DRAFT',createBy=recordInfo['creator']).order_by('-createtime')[:1000]
                     data=serializers.serialize('json',recoedlist)
                     return JsonResponse(data,safe=False)
             # form=DF_forms(request.POST)
@@ -463,7 +463,7 @@ class DF_AjaxView(View):
     def get(self,request):
         if request.is_ajax:
             static_code=request.GET.get('staict_code')
-            prd_list=DF_table.objects.filter(staticcode=static_code,createBy=request.user.first_name)
+            prd_list=DF_table.objects.filter(staticcode=static_code,createBy=request.user.first_name).order_by('-createtime')[:1000]
             data=serializers.serialize('json',prd_list)
         else:
             data=[]
@@ -477,7 +477,7 @@ class DF_AjaxView(View):
             if static_code=='DELETED':
                 record.staticcode=static_code
                 record.save()
-                prd_list=DF_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT')
+                prd_list=DF_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT').order_by('-createtime')[:1000]
 
             else:
                 record.WorkStartTime=request.POST.get('start_time')
@@ -487,7 +487,7 @@ class DF_AjaxView(View):
                 record.posttime=datetime.now()
                 record.FinishQty=request.POST.get('finishqty')
                 record.save()
-                prd_list=DF_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT')
+                prd_list=DF_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT').order_by('-createtime')[:1000]
         data=serializers.serialize('json',prd_list)
         return JsonResponse(data,safe=False)
 
@@ -513,8 +513,8 @@ class DF_MdfViewAjax(View):
     def get(self,request):
         if request.is_ajax:
             staict_code=request.GET.get('static_code')
-            print(staict_code)
-            gw_list=DF_table.objects.filter(staticcode=staict_code)
+            # print(staict_code)
+            gw_list=DF_table.objects.filter(staticcode=staict_code).order_by('-createtime')[:1000]
             data=serializers.serialize('json',gw_list)
             return JsonResponse(data,safe=False)
         else:
@@ -528,8 +528,6 @@ class DF_MdfViewAjax(View):
             printnum=request.POST.get('printnum')
             scan_k_val=request.POST.get('scan_k_val')
             week_val=request.POST.get('week_val')
-            print(scan_k_val+' '+week_val)
-
             record=DF_table.objects.get(id=record_id,PrintNum=printnum)
             record.Scan_K_val=scan_k_val
             record.Week_val=week_val
@@ -538,7 +536,7 @@ class DF_MdfViewAjax(View):
             record.CheckTime=datetime.now()
             record.save()
             set_dfFinalQty(record)
-            gw_list=DF_table.objects.filter(staticcode='POST')
+            gw_list=DF_table.objects.filter(staticcode='POST').order_by('-posttime')[:1000]
             data=serializers.serialize('json',gw_list)
             # 不是设置工务系数,就是发还操作
         else:
@@ -547,7 +545,7 @@ class DF_MdfViewAjax(View):
             record=DF_table.objects.get(id=record_id,PrintNum=printnum)
             record.staticcode='POST'
             record.save()
-            gw_list=DF_table.objects.filter(staticcode='CHECKED')
+            gw_list=DF_table.objects.filter(staticcode='CHECKED').order_by('-CheckTime')[:1000]
             data=serializers.serialize('json',gw_list)
         return JsonResponse(data,safe=False)
 
@@ -594,7 +592,7 @@ class ZJ_View(View):   #浏览器正常访问质检页面
                 recordInfo['creator']=info_dict['first_name']
                 print(recordInfo['creator']+'hh'+recordInfo['remark'])
                 if zjMaker(work_types,recordInfo):
-                    recoedlist=ZJ_table.objects.filter(staticcode='DRAFT',createBy=recordInfo['creator'])
+                    recoedlist=ZJ_table.objects.filter(staticcode='DRAFT',createBy=recordInfo['creator']).order_by('-createtime')[:1000]
                     data=serializers.serialize('json',recoedlist)
                     return JsonResponse(data,safe=False)
         else:
@@ -609,7 +607,7 @@ class ZJ_AjaxView(View):
     def get(self,request):
         if request.is_ajax:
             static_code=request.GET.get('staict_code')
-            prd_list=ZJ_table.objects.filter(staticcode=static_code,createBy=request.user.first_name)
+            prd_list=ZJ_table.objects.filter(staticcode=static_code,createBy=request.user.first_name).order_by('-createtime')[:1000]
             data=serializers.serialize('json',prd_list)
         else:
             data=[]
@@ -623,7 +621,7 @@ class ZJ_AjaxView(View):
             if static_code=='DELETED':
                 record.staticcode=static_code
                 record.save()
-                prd_list=ZJ_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT')
+                prd_list=ZJ_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT').order_by('-createtime')[:1000]
 
             else:
                 record.WorkStartTime=request.POST.get('start_time')
@@ -634,7 +632,7 @@ class ZJ_AjaxView(View):
                 record.posttime=datetime.now()
                 record.FinishQty=request.POST.get('finishqty')
                 record.save()
-                prd_list=ZJ_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT')
+                prd_list=ZJ_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT').order_by('-createtime')[:1000]
         data=serializers.serialize('json',prd_list)
         return JsonResponse(data,safe=False)
 
@@ -660,7 +658,7 @@ class ZJ_MdfViewAjax(View):
         if request.is_ajax:
             staict_code=request.GET.get('static_code')
             print(staict_code)
-            gw_list=ZJ_table.objects.filter(staticcode=staict_code)
+            gw_list=ZJ_table.objects.filter(staticcode=staict_code).order_by('-createtime')[:1000]
             data=serializers.serialize('json',gw_list)
             return JsonResponse(data,safe=False)
         else:
@@ -682,7 +680,7 @@ class ZJ_MdfViewAjax(View):
             set_zjFinalQty(record)
 
 
-            gw_list=ZJ_table.objects.filter(staticcode='POST')
+            gw_list=ZJ_table.objects.filter(staticcode='POST').order_by('-posttime')[:1000]
             data=serializers.serialize('json',gw_list)
             # 不是设置工务系数,就是发还操作
         else:
@@ -691,7 +689,7 @@ class ZJ_MdfViewAjax(View):
             record=ZJ_table.objects.get(id=record_id,PrintNum=printnum)
             record.staticcode='POST'
             record.save()
-            gw_list=ZJ_table.objects.filter(staticcode='CHECKED')
+            gw_list=ZJ_table.objects.filter(staticcode='CHECKED').order_by('-CheckTime')[:1000]
             data=serializers.serialize('json',gw_list)
         return JsonResponse(data,safe=False)
 
@@ -906,32 +904,40 @@ class PageLog_AjaxView(View):
                 prd_list=Page_loged.objects.all()
 
             else:
-
-                # record.WorkStartTime=request.POST.get('start_time')
-                # record.WorkEndTime=request.POST.get('end_time')
-                # record.staticcode=static_code
-                # record.postBy=request.user.first_name
-                # record.posttime=datetime.now()
-                # record.save()
                 prd_list=Page_loged.objects.all()
         data=serializers.serialize('json',prd_list)
         return JsonResponse(data,safe=False)
-class select2_test(View):
+
+
+@method_decorator([login_required,csrf_protect],name='dispatch')
+class ReportView(View):
     def get(self,request):
-        template_name='Tango_app/SELECT2.HTML'
-        return render(request,template_name)
+        template_name='Tango_app/reportpage.html'
+        info_dict={'username':request.user.username,'first_name':request.user.first_name}
+        return render(request,template_name,info_dict)
 
 
     def post(self,request):
-        if request.is_ajax:
-            gw_work_types= request.POST.get('values')
-            gw_printnum=request.POST.get('printnum')
-            gw_printname=request.POST.get('printname')
-            gw_workdate=request.POST.get('workdate')
-            gw_maker(gw_work_types,printnum=gw_printnum,printname=gw_printname,workdata=gw_workdate)
+        startTime=request.POST.get('start_time')
+        endTime=request.POST.get('end_time')
+        reportType=request.POST.get('report_type')
+        record_list=getReport(startTime,endTime,reportType)
+
+        data=json.dumps(record_list)
+        return JsonResponse(data,safe=False)
 
 
-            print(GW_pre_table.objects.filter(PrintNum=gw_printnum))
+class DetilReport(View):
+    def get(self,request):
+        template_name='Tango_app/detilreport.html'
+        info_dict={'username':request.user.username,'first_name':request.user.first_name}
 
-        else:
-            return HttpResponse(request.POST.get('form 提交成功'))
+        return render(request,template_name,info_dict)
+    def post(self,request):
+        startTime=request.POST.get('start_time')
+        endTime=request.POST.get('end_time')
+        reportType=request.POST.get('report_type')
+        record_list=getDetilReport(startTime,endTime,reportType)
+
+        data=serializers.serialize('json',record_list)
+        return JsonResponse(data,safe=False)

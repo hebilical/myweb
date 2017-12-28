@@ -198,7 +198,7 @@ $(document).ready(function () {
 
               k_set:true//设置系数时候为true,发还为false
             },
-            success:function (data) {              
+            success:function (data) {
               var jsondata=dataBuild(data);
               $('#zj_table_k').bootstrapTable('load',jsondata);
 
@@ -394,6 +394,20 @@ $(document).ready(function () {
 
 
 }
+
+
+$.ajax({
+  url:'/Tango_app/zj/modify_ajax/',
+  type:'GET',
+  data:{static_code:'POST'},
+  success: function (data) {
+
+    var datajson=dataBuild(data);
+    tableInit();
+    $('#zj_table_k').bootstrapTable('load',datajson);
+  }
+});
+
 
   /* 系数修改按钮点击事件,将信息提交到后台,并且返回修改后的数据  */
   $('.static_btn').on('click',function () {

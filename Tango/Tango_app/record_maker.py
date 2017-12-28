@@ -1,4 +1,5 @@
-from  Tango_app.models import GW_pre_table,PRO_table,DF_table,ZJ_table
+from  Tango_app.models import GW_pre_table,PRO_table,DF_table,ZJ_table, OUT_table
+from django.db.models import Sum
 
 
 
@@ -83,9 +84,9 @@ def set_gwFinalQty(record):
     'KP':0.3
     }
     if record:
-        print(k_dict[record.WorkType])
-        print(record.FinishQty)
-        print(record.K_val)
+        # print(k_dict[record.WorkType])
+        # print(record.FinishQty)
+        # print(record.K_val)
         record.FinalQty=float(record.FinishQty)*k_dict[record.WorkType]*float(record.K_val)
         record.save()
     else:
@@ -134,7 +135,7 @@ def set_dfFinalQty(record):
             print()
             record.FinalQty=float(record.FinishQty)*float(record.Week_val)
         if record.WorkType=='COR_ZCTY':
-            record.FinalQty=record.FinishQty*30    
+            record.FinalQty=record.FinishQty*30
     record.save()
 
 
@@ -158,3 +159,73 @@ def set_zjFinalQty(record):
     else:
         record.FinalQty=float(record.FinalQty)*k_dict[record.WorkType]
         record.save()
+
+
+def getReport(starTime,endTime,reportType):
+    re_list=[]
+    if reportType=='GW':
+        menber=GW_pre_table.objects.values('createBy').distinct()
+        for item in menber:
+            _item= GW_pre_table.objects.filter(createBy=item['createBy'],staticcode='CHECKED',WorkData__range=[starTime,endTime]).aggregate(Sum('FinalQty'))
+            list_item={
+            'record':{'name':item['createBy'],'finalqty':_item['FinalQty__sum'],},
+
+            }
+            # item['createBy']:_item['FinalQty__sum']
+            re_list.append(list_item)
+    if reportType=='PRD':
+        menber=PRO_table.objects.values('createBy').distinct()
+        for item in menber:
+            _item= PRO_table.objects.filter(createBy=item['createBy'],staticcode='CHECKED',WorkData__range=[starTime,endTime]).aggregate(Sum('FinalQty'))
+            list_item={
+            'record':{'name':item['createBy'],'finalqty':_item['FinalQty__sum'],},
+
+            }
+            # item['createBy']:_item['FinalQty__sum']
+            re_list.append(list_item)
+    if reportType=='DF':
+        menber=DF_table.objects.values('createBy').distinct()
+        for item in menber:
+            _item= DF_table.objects.filter(createBy=item['createBy'],staticcode='CHECKED',WorkData__range=[starTime,endTime]).aggregate(Sum('FinalQty'))
+            list_item={
+            'record':{'name':item['createBy'],'finalqty':_item['FinalQty__sum'],},
+
+            }
+            # item['createBy']:_item['FinalQty__sum']
+            re_list.append(list_item)
+    if reportType=='OUT':
+        menber=OUT_table.objects.values('createBy').distinct()
+        for item in menber:
+            _item= OUT_table.objects.filter(createBy=item['createBy'],staticcode='CHECKED',WorkData__range=[starTime,endTime]).aggregate(Sum('FinishQty'))
+            list_item={
+            'record':{'name':item['createBy'],'finalqty':_item['FinishQty__sum'],},
+
+            }
+            # item['createBy']:_item['FinalQty__sum']
+            re_list.append(list_item)
+    if reportType=='ZJ':
+        menber=ZJ_table.objects.values('createBy').distinct()
+        for item in menber:
+            _item= ZJ_table.objects.filter(createBy=item['createBy'],staticcode='CHECKED',WorkData__range=[starTime,endTime]).aggregate(Sum('FinalQty'))
+            list_item={
+            'record':{'name':item['createBy'],'finalqty':_item['FinalQty__sum'],},
+
+            }
+            # item['createBy']:_item['FinalQty__sum']
+            re_list.append(list_item)
+
+    return re_list
+
+
+def getDetilReport(startTime,endTime,reportType):
+    if reportType=='GW':
+        re_list=GW_pre_table.objects.filter(staticcode='CHECKED',WorkData__range=[startTime,endTime]).order_by('-CheckTime')
+    if reportType=='PRD':
+        re_list=PRO_table.objects.filter(staticcode='CHECKED',WorkData__range=[startTime,endTime]).order_by('-CheckTime')
+    if reportType=='DF':
+        re_list=DF_table.objects.filter(staticcode='CHECKED',WorkData__range=[startTime,endTime]).order_by('-CheckTime')
+    if reportType=='OUT':
+        re_list=OUT_table.objects.filter(staticcode='CHECKED',WorkData__range=[startTime,endTime]).order_by('-CheckTime')
+    if reportType=='ZJ':
+        re_list=ZJ_table.objects.filter(staticcode='CHECKED',WorkData__range=[startTime,endTime]).order_by('-CheckTime')
+    return re_list

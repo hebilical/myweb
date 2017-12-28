@@ -15,6 +15,7 @@ $(document).ready(function() {
                     SBL:"算倍率",
                     COPYDOT:"COPTDOT",
                     KP:"刻盘",
+                    FTP:"FTP下载"
       };
       var size_type={
         1:'4K',
@@ -396,8 +397,7 @@ $('#submit_btn').on('click',  function(event) {
         work_types:work_types,
         remark:remark
       },
-      success:function (data) {
-        alert(data);
+      success:function (data) {        
         var datajson= DataBuild(data);
         GW_TableInit();
         $('#gw_table').bootstrapTable('load',datajson);
