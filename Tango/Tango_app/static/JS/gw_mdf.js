@@ -45,6 +45,7 @@ function dataBuild(data) {
       FinishQty:el.fields.FinishQty,
       remark:el.fields.remark,
       k_val:el.fields.K_val,
+
       static_code:static_type[el.fields.staticcode],
       createBy:el.fields.createBy,
       createtime:el.fields.createtime,
@@ -113,6 +114,10 @@ function tableInit() {
       }
     },
     {
+      field:'finalqty',
+      title:'折合完成数'
+    },
+    {
       field:'remark',
       title:'备注'
     },
@@ -164,13 +169,32 @@ function tableInit() {
     }
 
     ],
-    onEditableSave:function () {
+    onEditableSave:function (field,row,oldValue,$el) {
+      console.log(row);
+      $.ajax({
+        url: '/Tango_app/gw/modify_ajax',
+        type: 'POST',
+
+        data: {record_id: row.record_id,printnum:row.printnum,k_val:row.k_val,
+          k_set:'k_set'//设置系数时候为true,发还为false
+        },
+        success:function (data) {
+
+          var jsondata=dataBuild(data);
+
+          $('#gw_table_k').bootstrapTable('load',jsondata);
+
+
+        }
+
+      }
+
+  );
+
 
 
     },
-    onClickRow:function(row,$element,field) {
 
-    },
     onClickCell:function (field, value, row, $element) {
 
 

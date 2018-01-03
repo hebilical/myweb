@@ -50,15 +50,70 @@
     <title></title>
   </head>
   <body>
+
+
+    <nav class="navbar navbar-default" role="navigation">
+        <div class="navbar-header">
+          <ul class="nav navbar-nav">
+            <li>
+              <a href="#" data-toggle='dropdown'><h4>报表录入</h4><b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="/Tango_app/gw"><h4>工务日报表</h4></a></li>
+                <li><a href="/Tango_app/prd"><h4>制作日报表</h4></a></li>
+                <li><a href="/Tango_app/df"><h4>电分日报表</h4></a></li>
+                <li><a href="/Tango_app/zj"><h4>质检日报表</h4></a></li>
+                <li><a href="/Tango_app/out"><h4>输出日报表</h4></a></li>
+                <li><a href="/Tango_app/pagelog"><h4>板材领取表</h4></a></li>
+              </ul>
+
+            </li>
+
+
+            <li>
+
+              <a href="#" data-toggle='dropdown'><h4>系数确定</h4><b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="/Tango_app/gw/modify"><h4>工务日报系数修改</h4></a></li>
+                <li><a href="/Tango_app/prd/modify"><h4>制作日报系数修改</h4></a></li>
+                <li><a href="/Tango_app/df/modify"><h4>电分日报系数修改</h4></a></li>
+                <li><a href="/Tango_app/zj/modify"><h4>质检日报系数修改</h4></a></li>
+                <li><a href="/Tango_app/out/modify"><h4>输出日报确认</h4></a></li>
+              </ul>
+            </li>
+
+            <li>
+
+              <a href="#" data-toggle='dropdown'><h4>查询与导出</h4><b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="/Tango_app/report"><h4>月产量</h4></a></li>
+                <li><a href="/Tango_app/detilreport"><h4>个人明细产量</h4></a></li>
+              </ul>
+            </li>
+
+            <!-- <li><a href="#"><h4>报表录入</h4></a></li>
+            <li><a href="/Tango_app/gw"><h4>工务日报表</h4></a></li>
+            <li><a href="/Tango_app/prd"><h4>制作日报表</h4></a></li>
+            <li><a href="/Tango_app/df"><h4>电分日报表</h4></a></li>
+            <li><a href="/Tango_app/zj"><h4>质检日报表</h4></a></li>
+            <li><a href="/Tango_app/out"><h4>输出日报表</h4></a></li>
+            <li><a href="/Tango_app/pagelog"><h4>板材领取表</h4></a></li> -->
+
+          </ul>
+
+        </div>
+        <div class="col-md-2 pull-right">
+          <label>当前用户:{{username}}</label>
+          <br>
+          <label>姓名:{{first_name}}</label>
+          <br>
+          <a href="/Tango_app/login">退出登录</a>
+        </div>
+    </nav>
+
+
       <h2>质检报表系数修改页</h2>
       <a href="/Tango_app"><h4>返回主页</h4></a>
-    <div class="userInfo">
-      <label>当前用户:{{username}}</label>
-      <br>
-      <label>姓名:{{first_name}}</label>
-      <br>
-      <a href="/Tango_app/login">退出登录</a>
-    </div>
+
 <br>
 <br>
 <br>

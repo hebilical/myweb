@@ -173,6 +173,29 @@ $(document).ready(function() {
       }
 
         ],
+        onEditableSave:function (field,row,oldValue,$el) {
+          // alert(field);
+          // console.log(row);
+
+          var record_id=row.record_id;
+          var record_printnum=row.printnum;
+          var finishqty=row.FinishQty;
+          $.ajax({
+            url: '/Tango_app/gwajax/',
+            type: 'POST',
+            data: {
+              gw_id:record_id,
+              gw_printnum:record_printnum,
+              gw_finishqty:finishqty,
+              static_code:'DRAFT'
+            },
+            success:function (data) {
+              var datajson=DataBuild(data);
+              $('#gw_table').bootstrapTable('load',datajson);
+            }
+          });
+
+        },
         exportDataType:'all',
         showExport:true,
         exportTypes:['excel'],
@@ -397,7 +420,7 @@ $('#submit_btn').on('click',  function(event) {
         work_types:work_types,
         remark:remark
       },
-      success:function (data) {        
+      success:function (data) {
         var datajson= DataBuild(data);
         GW_TableInit();
         $('#gw_table').bootstrapTable('load',datajson);

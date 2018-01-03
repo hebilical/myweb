@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {% load static %}
+    <meta charset="utf-8">
+    <title>系数修改权限组</title>
+    <link rel="stylesheet" href='{% static "bootstrap-3.3.7-dist/css/bootstrap.css" %}'>
+    <link rel="stylesheet" href='{% static "bootstrap-table/dist/bootstrap-table.css" %}'>
+    <link rel="stylesheet" href='{% static "bootstrap3-editable/css/bootstrap-editable.css" %}'>
+    <link rel="stylesheet" href='{% static "bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" %}'>
+    <link rel="stylesheet" href='{% static "select2/dist/css/select2.min.css" %}'>
+
+    <!-- <link rel="stylesheet" href="./css/gw.css"> -->
+    <script type="text/javascript" src='{% static "JS/jquery-3.2.1.js" %}'>
+
+    </script>
+    <script type="text/javascript" src='{% static "bootstrap-3.3.7-dist/js/bootstrap.js" %}'>
+
+    </script>
+    <script type="text/javascript"  src='{% static "bootstrap-table/dist/bootstrap-table.js" %}'>
+
+    </script>
+    <script type="text/javascript" src='{% static "bootstrap-table/dist/locale/bootstrap-table-zh-CN.js" %}'>
+  // 支持表格导出
+    </script>
+    <script type="text/javascript" src='{% static "JS/Ajax.js" %}'>
+
+    </script>
+    <script type="text/javascript" src='{% static "JS/KSeter.js" %}'>
+
+    </script>
+  </head>
+  <body>
+
+    <div class="col-md-2 pull-right">
+      <label>当前用户:{{username}}</label>
+      <br>
+      <label>姓名:{{first_name}}</label>
+      <br>
+      <a href="/Tango_app/login">退出登录</a>
+    </div>
+    <a href="/Tango_app"><h4>返回主页</h4></a>
+<br>
+<br>
+<br>
+<br>
+
+      <div class="inputpart">
+        <input  id='addcode' type="text" name="" value="">
+        <button id='add_btn' type="button" name="button">新增至系数设置组</button>
+
+        <br>
+        <input  id='rmcode' type="text" name="" value="">
+        <button id='rm_btn' type="button" name="button">从系数设置组移除</button>
+      </div>
+
+
+      <div class="showpart">
+        <button id='ser_btn' type="button" name="button">查看系数设置组成员</button>
+        <br>
+        <table id='K_Seters'>
+
+        </table>
+      </div>
+
+
+
+  </body>
+</html>

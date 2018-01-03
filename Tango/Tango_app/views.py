@@ -6,7 +6,7 @@ from django.contrib.auth import  authenticate,login,logout
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_protect
 from django.utils.decorators import method_decorator
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 # from Tango_app.forms import GW_forms
 from django.http import HttpResponse,Http404,HttpResponseRedirect,JsonResponse
 from django.views.generic.base import View
@@ -16,6 +16,7 @@ from django.contrib.sessions.models import Session
 from guardian.shortcuts import assign_perm
 from django.core import serializers
 from Tango_app.record_maker import gw_maker,prdMaker,dfMaker,zjMaker,set_gwFinalQty,set_prdFinalQty,set_dfFinalQty,set_zjFinalQty,getReport,getDetilReport
+from Tango_app.permissioncheck import addK_seter, rmK_Seters, isK_Seter
 # Create your views here.
 @method_decorator([login_required,csrf_protect],name='dispatch')
 class IndexView(View):
@@ -156,7 +157,7 @@ class GW_AjaxView(View):
         if staict_code=='POST':
             record.update(staticcode=staict_code,FinishQty=int(request.POST.get('gw_finishqty')),postBy=request.user.username,posttime=datetime.now())
         else:
-            record.update(staticcode=staict_code,updateBy=request.user.username,updatetime=datetime.now())
+            record.update(staticcode=staict_code,FinishQty=int(request.POST.get('gw_finishqty')),updateBy=request.user.username,updatetime=datetime.now())
         gw_list=GW_pre_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT').order_by('-createtime')[:1000]
         data=serializers.serialize('json',gw_list)
         return JsonResponse(data,safe=False)
@@ -172,7 +173,8 @@ class GW_Mdf_View(View):
         return render(request,template_name,info_dict)
 
     def post(self,request):
-        if request.is_ajax:
+        user=User.objects.get(username=request.user.username)
+        if request.is_ajax and isK_Seter(user):
             gw_k_val=request.POST.get('k_val')
             record_id=request.POST.get('record_id')
             gw_printnum=request.POST.get('printnum')
@@ -190,20 +192,24 @@ class GW_Mdf_View(View):
             data=serializers.serialize('json',gw_list)
             return JsonResponse(data,safe=False)
         else:
-            print('Ajax失败!')
-            return HttpResponse('Ajax 失败')
+            data={}
+            return JsonResponse(data,safe=False)
 
 @method_decorator([login_required,csrf_protect],name='dispatch')
 class GW_MdfView_ajax(View):
     # 返回工务修改页三个按钮的对应状态记录
+
     def get(self,request):
-        if request.is_ajax:
+        user=User.objects.get(username=request.user.username)
+
+        if request.is_ajax and isK_Seter(user):
             staict_code=request.GET.get('static_code')
             gw_list=GW_pre_table.objects.filter(staticcode=staict_code).order_by('-createtime')[:1000]
             data=serializers.serialize('json',gw_list)
             return JsonResponse(data,safe=False)
         else:
-            pass
+            data={}
+            return JsonResponse(data,safe=False)
 
 
 
@@ -211,7 +217,8 @@ class GW_MdfView_ajax(View):
             # 工务修改处理函数
     def post(self,request):
             #是否是设置系数
-        if request.is_ajax and request.POST.get('k_set')=='true':
+        user=User.objects.get(username=request.user.username)
+        if request.is_ajax and isK_Seter(user) and request.POST.get('k_set')=='true':
             # print(request.POST.get('k_set'))
             record_id=request.POST.get('record_id')
             printnum=request.POST.get('printnum')
@@ -224,10 +231,22 @@ class GW_MdfView_ajax(View):
             record.CheckBy=request.user.username
             record.CheckTime=datetime.now()
             record.save()
+
+            gw_list=GW_pre_table.objects.filter(staticcode='POST').order_by('-posttime')[:1000]
+            data=serializers.serialize('json',gw_list)
+
+        if request.is_ajax and request.POST.get('k_set')=='k_set':
+            record_id=request.POST.get('record_id')
+            printnum=request.POST.get('printnum')
+            k_val=request.POST.get('k_val')
+            record=GW_pre_table.objects.get(id=record_id,PrintNum=printnum)
+            record.K_val=k_val
+            record.save()
             set_gwFinalQty(record)
             gw_list=GW_pre_table.objects.filter(staticcode='POST').order_by('-posttime')[:1000]
             data=serializers.serialize('json',gw_list)
-            # 不是设置工务系数,就是发还操作
+
+        # 不是设置工务系数,就是发还操作
         else:
             record_id=request.POST.get('record_id')
             printnum=request.POST.get('printnum')
@@ -289,16 +308,6 @@ class PRD_View(View):
                     recoedlist=PRO_table.objects.filter(staticcode='DRAFT',createBy=recordInfo['creator']).order_by('-createtime')[:1000]
                     data=serializers.serialize('json',recoedlist)
                     return JsonResponse(data,safe=False)
-            # form=PRO_forms(request.POST)
-            # if form.is_valid():
-            #     record=form.save(commit=False)
-            #     record.createBy=request.user.first_name
-            #     record.save()
-            #     assign_perm('Tango_app.prd_draft_post',request.user,record)
-            # gw_list=PRO_table.objects.filter(createBy=user.first_name,staticcode='DRAFT')
-            #
-            # info_dict['prd_form']=prd_form
-
         else:
             return HttpResponseRedirect('/Tango_app/login')
         return render(request,template_name,info_dict)
@@ -358,17 +367,20 @@ class PRD_MdfView(View):
 @method_decorator([login_required,csrf_protect],name='dispatch')
 class PRD_MdfViewAjax(View):
     def get(self,request):
-        if request.is_ajax:
+        user=User.objects.get(username=request.user.username)
+        if request.is_ajax and isK_Seter(user):
             staict_code=request.GET.get('static_code')
             gw_list=PRO_table.objects.filter(staticcode=staict_code).order_by('-createtime')[:1000]
             data=serializers.serialize('json',gw_list)
             return JsonResponse(data,safe=False)
         else:
-            pass
+            data={}
+            return JsonResponse(data,safe=False)
 
     def post(self,request):
             #是否是设置系数
-        if request.is_ajax and request.POST.get('k_set')=='true':
+        user=User.objects.get(username=request.user.username)
+        if request.is_ajax and isK_Seter(user) and request.POST.get('k_set')=='true':
             # print(request.POST.get('k_set'))
             record_id=request.POST.get('record_id')
             printnum=request.POST.get('printnum')
@@ -511,14 +523,16 @@ class DF_MdfView(View):
 @method_decorator([login_required,csrf_protect],name='dispatch')
 class DF_MdfViewAjax(View):
     def get(self,request):
-        if request.is_ajax:
+        user=User.objects.get(username=request.user.username)
+        if request.is_ajax and isK_Seter(user):
             staict_code=request.GET.get('static_code')
             # print(staict_code)
             gw_list=DF_table.objects.filter(staticcode=staict_code).order_by('-createtime')[:1000]
             data=serializers.serialize('json',gw_list)
             return JsonResponse(data,safe=False)
         else:
-            pass
+            data={}
+            return JsonResponse(data,safe=False)
 
     def post(self,request):
             #是否是设置系数
@@ -655,14 +669,16 @@ class ZJ_MdfView(View):
 @method_decorator([login_required,csrf_protect],name='dispatch')
 class ZJ_MdfViewAjax(View):
     def get(self,request):
-        if request.is_ajax:
+        user=User.objects.get(username=request.user.username)
+        if request.is_ajax and isK_Seter(user):
             staict_code=request.GET.get('static_code')
             print(staict_code)
             gw_list=ZJ_table.objects.filter(staticcode=staict_code).order_by('-createtime')[:1000]
             data=serializers.serialize('json',gw_list)
             return JsonResponse(data,safe=False)
         else:
-            pass
+            data={}
+            return JsonResponse(data,safe=False)
 
     def post(self,request):
             #是否是设置系数
@@ -703,19 +719,9 @@ class OUT_View(View):   #浏览器正常访问输出表页面
 
 
         out_form=OUT_forms()
-        #
-        # if request.user.is_authenticated():
-        #     form=ZJ_forms(request.POST)
-        #     if form.is_valid():
-        #         record=form.save(commit=False)
-        #         record.createBy=request.user.first_name
-        #         record.save()
-        #         assign_perm('Tango_app.zj_draft_post',request.user,record)
-        #
+
         info_dict['out_form']=out_form
-        #
-        # else:
-        #     return HttpResponseRedirect('/Tango_app/login')
+
         return render(request,template_name,info_dict)
 
     def post(self,request):
@@ -736,12 +742,7 @@ class OUT_View(View):   #浏览器正常访问输出表页面
 
                 assign_perm('Tango_app.out_draft_post',request.user,record)
 
-            # gw_list=PRO_table.objects.filter(createBy=request.user.first_name,staticcode='DRAFT')
-            # for item in gw_list:
-            #     form_list.append(item)
 
-            # info_dict['form_list']=form_list
-            # return JsonResponse(data,safe=False)
         else:
             return HttpResponseRedirect('/Tango_app/login')
         info_dict['out_form']=out_form
@@ -802,15 +803,18 @@ class OUT_MdfView(View):
 
 @method_decorator([login_required,csrf_protect],name='dispatch')
 class OUT_MdfViewAjax(View):
+
     def get(self,request):
-        if request.is_ajax:
+        user=User.objects.get(username=request.user.username)
+        if request.is_ajax and isK_Seter(user):
             staict_code=request.GET.get('static_code')
             print(staict_code)
             gw_list=OUT_table.objects.filter(staticcode=staict_code)
             data=serializers.serialize('json',gw_list)
             return JsonResponse(data,safe=False)
         else:
-            pass
+            data={}
+            return JsonResponse(data,safe=False)
 
     def post(self,request):
             #是否是设置系数
@@ -939,5 +943,34 @@ class DetilReport(View):
         reportType=request.POST.get('report_type')
         record_list=getDetilReport(startTime,endTime,reportType)
 
+        data=serializers.serialize('json',record_list)
+        return JsonResponse(data,safe=False)
+
+
+@method_decorator([login_required,csrf_protect],name='dispatch')
+class K_SetersView(View):
+    def get(self,request):
+        if request.user.is_superuser:
+            template_name='Tango_app/KSeter.html'
+            info_dict={'username':request.user.username,'first_name':request.user.first_name}
+            return render(request,template_name,info_dict)
+        else:
+            return HttpResponseRedirect('/Tango_app/login/')
+
+    def post(self,request):
+        emp_code=request.POST.get('emp_code')
+        act_type=request.POST.get('act_type')
+        group=Group.objects.get(name='K_Seters')
+        try:
+            user=User.objects.get(username=emp_code)
+        except Exception as e:
+            pass
+        else:
+
+            if act_type=='ADD':
+                addK_seter(user)
+            if act_type=='RM':
+                rmK_Seters(user)
+        record_list=User.objects.filter(groups=group)
         data=serializers.serialize('json',record_list)
         return JsonResponse(data,safe=False)

@@ -224,7 +224,7 @@ function tableInit() {
            }
 
            else{
-             alert(record_id+record_printnum);
+             
              $.ajax({
                url: '/Tango_app/dfAjax/',
                type: 'POST',

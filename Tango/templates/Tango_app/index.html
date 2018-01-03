@@ -49,30 +49,29 @@
               <a href="#" data-toggle='dropdown'><h4>查询与导出</h4><b class="caret"></b></a>
               <ul class="dropdown-menu">
                 <li><a href="/Tango_app/report"><h4>月产量</h4></a></li>
-                <li><a href="/Tango_app/detilreport"><h4>个人明细产量</h4></a></li>          
+                <li><a href="/Tango_app/detilreport"><h4>个人明细产量</h4></a></li>
               </ul>
             </li>
-
-            <!-- <li><a href="#"><h4>报表录入</h4></a></li>
-            <li><a href="/Tango_app/gw"><h4>工务日报表</h4></a></li>
-            <li><a href="/Tango_app/prd"><h4>制作日报表</h4></a></li>
-            <li><a href="/Tango_app/df"><h4>电分日报表</h4></a></li>
-            <li><a href="/Tango_app/zj"><h4>质检日报表</h4></a></li>
-            <li><a href="/Tango_app/out"><h4>输出日报表</h4></a></li>
-            <li><a href="/Tango_app/pagelog"><h4>板材领取表</h4></a></li> -->
-
           </ul>
 
         </div>
+
+        <div class="col-md-2">
+          <br>
+          <h4><a href="/Tango_app/KSeters/">权限组</a></h4>
+
+        </div>
+
+        <div class="col-md-2 pull-right">
+          <label>当前用户:{{username}}</label>
+          <br>
+          <label>姓名:{{first_name}}</label>
+          <br>
+          <a href="/Tango_app/login">退出登录</a>
+        </div>
     </nav>
 
-    <div class="userInfo">
-      <label>当前用户:{{username}}</label>
-      <br>
-      <label>姓名:{{first_name}}</label>
-      <br>
-      <a href="/Tango_app/login">退出登录</a>
-    </div>
+
     <!-- <div class="partone">
       <a href="/Tango_app/about"><h4>about</h4></a>
       <a href="/Tango_app/gw"><h4>工务日报表</h4></a>

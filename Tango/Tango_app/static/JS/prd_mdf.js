@@ -172,6 +172,12 @@ function tableInit() {
                       },
     }
     ],
+    onEditableSave:function (field,row,oldValue,$el) {
+      
+
+    },
+
+
     onClickCell:function (field, value, row, $element) {
       if (field==='operation') {
         var k_val= $element.closest('tr').find('a').html();

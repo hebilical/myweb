@@ -198,6 +198,13 @@ $(document).ready(function() {
         }
 
           ],
+          onEditableSave:function (field,row,oldValue,$el) {
+
+            console.log(row);
+
+          },
+
+
           // 导出设置
           exportDataType:'all',
           showExport:true,
@@ -219,6 +226,10 @@ $(document).ready(function() {
           paginationHAlign:'left',
           search:true,
           editable:true,
+
+
+
+
           onClickCell:function (field,value,row,$element) {
             var record_id=$element.closest('tr').find('[class="record_pk"]').text();
 
@@ -234,7 +245,7 @@ $(document).ready(function() {
              }
 
              else{
-               alert(record_id+record_printnum);
+
                $.ajax({
                  url: '/Tango_app/prdAjax/',
                  type: 'POST',
