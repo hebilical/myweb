@@ -18,8 +18,10 @@ from django.contrib import admin
 from django.conf.urls import url, include
 from django.conf import settings
 from django.conf.urls.static import static
+from Tango_app.views import IndexView
 urlpatterns = [
+    url(r"^$",IndexView.as_view()),
     url(r'^admin/', admin.site.urls),
     url(r'^Tango_app/',include('Tango_app.urls')),
-    
+
 ]

@@ -1,54 +1,66 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    {% load static %}
-    <link rel="stylesheet" href='{% static "bootstrap-3.3.7-dist/css/bootstrap.css" %}'>
-    <link rel="stylesheet" href='{% static "bootstrap-table/dist/bootstrap-table.css" %}'>
+<head>
+  {% load static %}
+  <link rel="stylesheet" href='{% static "bootstrap-3.3.7-dist/css/bootstrap.css" %}'>
+  <link rel="stylesheet" href='{% static "bootstrap-table/dist/bootstrap-table.css" %}'>
+  <link rel="stylesheet" href='{% static "bootstrap3-editable/css/bootstrap-editable.css" %}'>
+  <link rel="stylesheet" href='{% static "bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" %}'>
+  <link rel="stylesheet" href='{% static "select2/dist/css/select2.min.css" %}'>
+  <!-- <link rel="stylesheet" href="./css/gw.css"> -->
+  <script type="text/javascript" src='{% static "JS/jquery-3.2.1.js" %}'>
 
-    <!-- <link rel="stylesheet" href="./css/gw.css"> -->
-    <script type="text/javascript" src='{% static "JS/jquery-3.2.1.js" %}'>
+  </script>
+  <script type="text/javascript" src='{% static "bootstrap-3.3.7-dist/js/bootstrap.js" %}'>
 
-    </script>
-    <script type="text/javascript" src='{% static "bootstrap-3.3.7-dist/js/bootstrap.js" %}'>
+  </script>
+  <script type="text/javascript"  src='{% static "bootstrap-table/dist/bootstrap-table.js" %}'>
 
-    </script>
-    <script type="text/javascript"  src='{% static "bootstrap-table/dist/bootstrap-table.js" %}'>
+  </script>
+  <script type="text/javascript"  src='{% static "select2/dist/js/select2.min.js" %}'>
 
-    </script>
-    <!-- 中文支持 -->
+  </script>
+  <!-- 中文支持 -->
+  <script type="text/javascript"  src='{% static "bootstrap-datetimepicker/js/bootstrap-datetimepicker.js" %}'>
 
-    <script type="text/javascript" src='{% static "bootstrap-table/dist/locale/bootstrap-table-zh-CN.js" %}'>
+  </script>
+  <!-- 中文支持 -->
+  <script type="text/javascript"  src='{% static "bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" %}'>
 
-    </script>
-    <!-- 支持导出 -->
-    <script type="text/javascript" src='{% static "bootstrap-table/dist/extensions/export/bootstrap-table-export.min.js" %}'>
+  </script>
 
-    </script>
-    <script type="text/javascript" src='{% static "tableExport.jquery.plugin/tableExport.js" %}' >
+  <script type="text/javascript" src='{% static "bootstrap-table/dist/locale/bootstrap-table-zh-CN.js" %}'>
+// 支持表格导出
+  </script>
+  <script type="text/javascript" src='{% static "tableExport.jquery.plugin/tableExport.js" %}'>
 
-    </script>
+  </script>
+  <script type="text/javascript" src='{% static "tableExport.jquery.plugin/libs/js-xlsx/xlsx.core.min.js" %}'>
 
-    <script type="text/javascript" src='{% static "tableExport.jquery.plugin/libs/js-xlsx/xlsx.core.min.js" %}'>
+  </script>
 
-    </script>
-<!--   支持行内编辑-->
-    <script type="text/javascript" src='{% static "bootstrap3-editable/js/bootstrap-editable.js" %}' >
+  <script type="text/javascript"  src='{% static "bootstrap-table/dist/extensions/export/bootstrap-table-export.js" %}'>
 
-    </script>
-    <script type="text/javascript"  src='{% static "bootstrap-table/dist/extensions/editable/bootstrap-table-editable.js" %}'>
+  </script>
+  <!-- 支持表格在线编辑 -->
 
-    </script>
+  <script type="text/javascript" src='{% static "bootstrap3-editable/js/bootstrap-editable.js" %}' >
 
-    <script type="text/javascript" src='{% static "JS/Ajax.js" %}'>
+  </script>
+  <script type="text/javascript"  src='{% static "bootstrap-table/dist/extensions/editable/bootstrap-table-editable.js" %}'>
 
-    </script>
-    <script type="text/javascript" src='{% static "JS/prd_mdf.js" %}'>
+  </script>
+  <!--  处理Django的CSRF保护-->
 
-    </script>
+  <script type="text/javascript" src='{% static "JS/Ajax.js" %}'>
 
-    <meta charset="utf-8">
-    <title></title>
-  </head>
+  </script>
+  <script type="text/javascript" src='{% static "JS/blockcheck.js" %}'>
+
+  </script>
+  <meta charset="utf-8">
+  <title>板材核对页</title>
+</head>
   <body>
 
     <nav class="navbar navbar-default" role="navigation">
@@ -87,6 +99,7 @@
                 <li><a href="/Tango_app/report"><h4>月产量</h4></a></li>
                 <li><a href="/Tango_app/detilreport"><h4>个人明细产量</h4></a></li>
                 <li><a href="/Tango_app/blockcheck"><h4>板材核对</h4></a></li>
+
               </ul>
             </li>
 
@@ -108,32 +121,29 @@
           <br>
           <a href="/Tango_app/login">退出登录</a>
         </div>
-
     </nav>
 
 
-    <h3>制作报表系数修改页</h3>
-    <a href="/Tango_app"><h3>返回主页</h3></a>
 
-
-    <button type="button" class='static_btn' name="button" id='get_post'>已过帐</button>
-    <button type="button" class='static_btn' name="button" id='get_k_setted'>系数已定</button>
-    <button type="button" class='static_btn' name="button" id='get_del'>已删除</button>
-
+    <h2>板材核对</h2>
+    <a href="/Tango_app"><h4>返回主页</h4></a>
     <br>
-    <div class="container">
+    <br>
+    <div class="inputpart">
+      <label for=""> 起始日期:</label>
+      <input id='stardate' type="text" name="" value="">
+      <label for="">截止日期:</label>
+      <input id='enddate' type="text" name="" value="">
+      <button id='check_btn' type="button" name="button">确定</button>
 
     </div>
 
 
+    <div class="showpart">
+      <table id='blockChecktable' >
+
+      </table>
+
     </div>
-<!-- <h4>系数已设置</h4> -->
-  <div class="prd_table">
-    <table id="prd_table_k" border="1">
-
-    </table>
-
-  </div>
-
   </body>
 </html>

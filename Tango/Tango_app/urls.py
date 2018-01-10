@@ -1,5 +1,5 @@
 from django.conf.urls import  url
-from Tango_app.views import IndexView,AboutView,LoginView ,GWView,RegisterView,GW_Mdf_View,GW_AjaxView,GW_MdfView_ajax,PRD_View,PRD_ViewAjax,PRD_MdfView,PRD_MdfViewAjax,DF_View,DF_AjaxView,DF_MdfView,DF_MdfViewAjax,ZJ_View,ZJ_AjaxView,ZJ_MdfView,ZJ_MdfViewAjax,OUT_View,OUT_AjaxView,OUT_MdfView,OUT_MdfViewAjax,PageLogView,PageLog_AjaxView,ReportView,DetilReport,K_SetersView
+from Tango_app.views import IndexView,AboutView,LoginView ,GWView,RegisterView,GW_Mdf_View,GW_AjaxView,GW_MdfView_ajax,PRD_View,PRD_ViewAjax,PRD_MdfView,PRD_MdfViewAjax,DF_View,DF_AjaxView,DF_MdfView,DF_MdfViewAjax,ZJ_View,ZJ_AjaxView,ZJ_MdfView,ZJ_MdfViewAjax,OUT_View,OUT_AjaxView,OUT_MdfView,OUT_MdfViewAjax,PageLogView,PageLog_AjaxView,ReportView,DetilReport,K_SetersView,BlockCheckView
 urlpatterns=[
                 url(r'^$',IndexView.as_view()),#主页
                 url(r'^about', AboutView.as_view()),
@@ -32,4 +32,5 @@ urlpatterns=[
                 url(r'^report/$',ReportView.as_view()),
                 url(r'^detilreport/$',DetilReport.as_view()),
                 url(r'^KSeters/$',K_SetersView.as_view()),
+                url(r'^blockcheck/$',BlockCheckView.as_view()),
             ]

@@ -1,5 +1,6 @@
-from  Tango_app.models import GW_pre_table,PRO_table,DF_table,ZJ_table, OUT_table
+from  Tango_app.models import GW_pre_table,PRO_table,DF_table,ZJ_table, OUT_table,Page_loged
 from django.db.models import Sum
+import datetime
 
 
 
@@ -228,4 +229,87 @@ def getDetilReport(startTime,endTime,reportType):
         re_list=OUT_table.objects.filter(staticcode='CHECKED',WorkData__range=[startTime,endTime]).order_by('-CheckTime')
     if reportType=='ZJ':
         re_list=ZJ_table.objects.filter(staticcode='CHECKED',WorkData__range=[startTime,endTime]).order_by('-CheckTime')
+    return re_list
+
+
+def getDateBlockUsedByOutputReport(date,blockType):
+    try:
+        resultdict= OUT_table.objects.filter(staticcode='CHECKED',WorkData=date,PS_Type=blockType).aggregate(Sum('FinishQty'))
+        print('实际用版数')
+        if resultdict['FinishQty__sum']:
+            usedQty=resultdict['FinishQty__sum']
+        else:
+            usedQty=0
+    except Exception as e:
+        usedQty=0
+    else:
+        pass
+
+    return usedQty
+
+
+def getDateBlockOut(date,blockType):
+    try:
+        resultdict=Page_loged.objects.filter(UseType='OUT',PageType=blockType,Data=date).aggregate(Sum('Qty'))
+        print('求领版数')
+        if resultdict['Qty__sum']:
+
+            talOutQty=resultdict['Qty__sum']
+        else:
+            talOutQty=0
+
+
+    except Exception as e:
+        talOutQty=0
+    else:
+        pass
+
+    return talOutQty
+
+
+def getDateBlockUsed(date,blockType):
+    try:
+        resultdict=Page_loged.objects.filter(UseType='USED',PageType=blockType,Data=date).aggregate(Sum('Qty'))
+        print('求记录使用数')
+        if resultdict['Qty__sum']:
+
+            talUsedQty=resultdict['Qty__sum']
+        else:
+            talUsedQty=0
+    except Exception as e:
+        talUsedQty=0
+    else:
+        pass
+
+    return talUsedQty
+
+def blockCheck(starDate,endDate,blockType):
+    ds=datetime.datetime.strptime(starDate,'%Y-%m-%d')
+    de=datetime.datetime.strptime(endDate,'%Y-%m-%d')
+    re_list=[]
+    for i in range(0,(de-ds).days+1):
+        logOutQty=getDateBlockOut(ds,blockType)
+        logUsedQty=getDateBlockUsed(ds,blockType)
+        actUsedQty= getDateBlockUsedByOutputReport(ds,blockType)
+        print(logOutQty)
+        print(logUsedQty)
+        print(actUsedQty)
+        leftQty=logOutQty-actUsedQty
+        if actUsedQty==logUsedQty:
+            checkResult=True
+        else:
+            checkResult=False
+        list_item={
+        'record':{
+        'date':ds.strftime('%Y-%m-%d'),
+        'blockType':blockType,
+        'dateLogOutQty':logOutQty,
+        'dateLogUsedQty':logUsedQty,
+        'actUsedQty':actUsedQty,
+        'checkResult':checkResult,
+        'leftQty':leftQty,
+        }
+        }
+        re_list.append(list_item)
+        ds+=datetime.timedelta(days=1)
     return re_list

@@ -15,7 +15,7 @@ from Tango_app.forms import GW_forms , PRO_forms, DF_forms,ZJ_forms,OUT_forms,Pa
 from django.contrib.sessions.models import Session
 from guardian.shortcuts import assign_perm
 from django.core import serializers
-from Tango_app.record_maker import gw_maker,prdMaker,dfMaker,zjMaker,set_gwFinalQty,set_prdFinalQty,set_dfFinalQty,set_zjFinalQty,getReport,getDetilReport
+from Tango_app.record_maker import gw_maker,prdMaker,dfMaker,zjMaker,set_gwFinalQty,set_prdFinalQty,set_dfFinalQty,set_zjFinalQty,getReport,getDetilReport,getDateBlockOut,getDateBlockUsed,getDateBlockUsedByOutputReport,blockCheck
 from Tango_app.permissioncheck import addK_seter, rmK_Seters, isK_Seter
 # Create your views here.
 @method_decorator([login_required,csrf_protect],name='dispatch')
@@ -932,6 +932,7 @@ class ReportView(View):
 
 
 class DetilReport(View):
+    #返回各类报表在指定时间段内的数据
     def get(self,request):
         template_name='Tango_app/detilreport.html'
         info_dict={'username':request.user.username,'first_name':request.user.first_name}
@@ -949,6 +950,7 @@ class DetilReport(View):
 
 @method_decorator([login_required,csrf_protect],name='dispatch')
 class K_SetersView(View):
+
     def get(self,request):
         if request.user.is_superuser:
             template_name='Tango_app/KSeter.html'
@@ -958,6 +960,7 @@ class K_SetersView(View):
             return HttpResponseRedirect('/Tango_app/login/')
 
     def post(self,request):
+        # 系数修改权限人员调整(增加,移除K_Seters成员)
         emp_code=request.POST.get('emp_code')
         act_type=request.POST.get('act_type')
         group=Group.objects.get(name='K_Seters')
@@ -974,3 +977,31 @@ class K_SetersView(View):
         record_list=User.objects.filter(groups=group)
         data=serializers.serialize('json',record_list)
         return JsonResponse(data,safe=False)
+
+
+
+class BlockCheckView(View):
+    def get(self,request):
+        info_dict={'username':request.user.username,'first_name':request.user.first_name}
+        template_name='Tango_app/blockcheck.html'
+        return render(request,template_name,info_dict)
+
+
+
+    def post(self,request):
+        if request.is_ajax:
+            starDate=request.POST.get('starDate')
+            endDate=request.POST.get('endDate')
+            record_list=[]
+            block_list=['IM500668','IM500536','IM501521','IM501520','IM501524','IM503335','IM500035','IM500746','IM500041','IM500990','IM500989']
+            for blockType in block_list:
+                item_list= blockCheck(starDate,endDate,blockType)
+                record_list.extend(item_list)
+
+            # blockType=request.GET.get('blockType')
+            # blockType='IM500668'
+
+
+            data=json.dumps(record_list)
+            return JsonResponse(data,safe=False)
+        pass
