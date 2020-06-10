@@ -1,2 +1,2 @@
 # myweb
-my first web plamfort
+my first web project
